@@ -20,7 +20,10 @@
 
 	<%
 		if(request != null) {
-			if(request.getParameter("action") != null && request.getParameter("username") != null && request.getParameter("passwort") != null) {
+			if(session.getAttribute("userId") != null && session.getAttribute("userType") != null) {
+				response.sendRedirect(session.getAttribute("userType") + ".jsp");
+			}
+			if(request.getParameter("login") != null && request.getParameter("username") != null && request.getParameter("passwort") != null) {
 				String name= request.getParameter("username");
 				String passwort = request.getParameter("passwort");
 				Verification verification = new Verification();
@@ -29,9 +32,13 @@
 				if(rs != null) {
 					while(rs.next()) {
 						RequestDispatcher rd = null;
+						session.setAttribute("userId", rs.getInt("ID"));
+						session.setAttribute("username", name);
 						if(rs.getInt("type") == 0) {
+							session.setAttribute("userType", "Mitarbeiter");
 				      	 	rd=request.getRequestDispatcher("Mitarbeiter.jsp"); 
 						} else if(rs.getInt("type") == 1){
+							session.setAttribute("userType", "Manager");
 				      	 	rd=request.getRequestDispatcher("Manager.jsp"); 							
 						} else {
 							return;
@@ -73,7 +80,7 @@
 			      	
 			      	<div class="row">
 			      		<div class="input-field col m11">
-			      		  	<button class="btn waves-effect waves-light" type="submit" name="action">Absenden</button>
+			      		  	<button class="btn waves-effect waves-light" type="submit" name="login">Absenden</button>
 			      		</div>
 			      	</div>
 					        
