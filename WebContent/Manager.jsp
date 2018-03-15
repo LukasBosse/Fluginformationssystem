@@ -22,6 +22,11 @@
 	if(session.getAttribute("userId") == null) {
 		response.sendRedirect("Main.jsp");
 	}
+	if(session.getAttribute("userType") != null) {
+		if(session.getAttribute("userType") != "Manager") {
+			response.sendRedirect("Main.jsp");
+		}
+	}
 	
 %>
 
@@ -36,9 +41,37 @@
       </ul>
     </div>
     <div class="col s1"><ul><li><a class="waves-effect waves-light btn" style="height: 45px;line-height: -moz-block-height;" href="Logout.jsp">Logout</a></li></ul></div>
-    <div id="fluege" class="col s12">Test 1</div>
-    <div id="flugzeuge" class="col s12">Test 2</div>
-    <div id="relationen" class="col s12">Test 3</div>
+     
+	    <div id="fluege" class="col s11 m11 customPanel">
+		    <div class="card horizontal">
+		      <div class="card-stacked">
+		        <div class="card-content">
+		          <p>I am a very simple card. I am good at containing small bits of information.</p>
+		        </div>
+		      </div>
+		    </div>
+	  </div>
+	  
+	  <div id="flugzeuge" class="col s11 m11 customPanel">
+		    <div class="card horizontal">
+		      <div class="card-stacked">
+		        <div class="card-content">
+		          <p>I am a very simple card. I am good at containing small bits of information.</p>
+		        </div>
+		      </div>
+		    </div>
+	  </div>
+	  
+	    <div id="relationen" class="col s11 m11 customPanel">
+		    <div class="card horizontal">
+		      <div class="card-stacked">
+		        <div class="card-content">
+		          <p>I am a very simple card. I am good at containing small bits of information.</p>
+		        </div>
+		      </div>
+		    </div>
+	  </div>
+ 
   </div>
   
   <!-- Compiled and minified JavaScript -->

@@ -1,5 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1"
     pageEncoding="ISO-8859-1"%>
+<%@ page import="com.fis.de.DatabaseConnection" %>
 <%@ page import="com.fis.de.Verification" %>
 <%@ page import="java.sql.ResultSet" %>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
@@ -25,10 +26,10 @@
 			}
 			if(request.getParameter("login") != null && request.getParameter("username") != null && request.getParameter("passwort") != null) {
 				String name= request.getParameter("username");
-				String passwort = request.getParameter("passwort");
-				Verification verification = new Verification();
-				verification.connect();
-				ResultSet rs = verification.executeQuery("SELECT * FROM users WHERE username = '" + name + "' AND passwort = '" + passwort + "' LIMIT 1", null);
+				String passwort = Verification.toMD5(request.getParameter("passwort"));
+				DatabaseConnection databaseConnection = new DatabaseConnection();
+				databaseConnection.connect();
+				ResultSet rs = databaseConnection.executeQuery("SELECT * FROM users WHERE username = '" + name + "' AND passwort = '" + passwort + "' LIMIT 1", null);
 				if(rs != null) {
 					while(rs.next()) {
 						RequestDispatcher rd = null;
@@ -46,7 +47,7 @@
 				      	rd.forward(request, response);  
 					}
 				}
-				verification.disconnect();
+				databaseConnection.disconnect();
 			}
 		}
 	%>

@@ -1,77 +1,26 @@
 package com.fis.de;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+
+import javax.xml.bind.DatatypeConverter;
 
 public class Verification {
 
-	private final String DRIVER = "com.mysql.cj.jdbc.Driver";
-	private final String HOST = "localhost";
-	private final String PORT = "3306";
-	private final String DATABASE = "flugbuchung";
-	private final String USER = "root";
-	private final String PASSWORT = "";
-	
-	private Connection cn = null;
-	private PreparedStatement  st = null;
-	private ResultSet  rs = null;
-	
-	public Verification() {}
-	
-	public void connect() {
+	public static String toMD5(String pass) {
+		MessageDigest md;
 		try {
-			Class.forName(DRIVER).newInstance();
-			cn = DriverManager.getConnection("jdbc:mysql://" + HOST + ":" + PORT + "/" + DATABASE + "?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC", USER, PASSWORT);
-		} catch (Exception ex) {
-			ex.printStackTrace();
-		}
-	}
-	
-	public boolean execute(String query, String[] param) {
-		if(cn == null) { return false; }
-		try {
-			st = cn.prepareStatement(query);
-			if(param != null) {
-				for(int i = 0; i < param.length; i++) {
-					st.setString(i+1, param[i]);
-				}
-			}
-			return st.execute(query);
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-		return false;
-	}
-	
-	public ResultSet executeQuery(String query, String[] param) {
-		if(cn == null) { return null; }
-		try {
-			st = cn.prepareStatement(query);
-			if(param != null) {
-				for(int i = 0; i < param.length; i++) {
-					st.setString(i+1, param[i]);
-				}
-			}
-			rs = st.executeQuery(query);
-		} catch (SQLException e) {
+			md = MessageDigest.getInstance("MD5");
+			md.update(pass.getBytes());
+		    byte[] digest = md.digest();
+		    String myHash = DatatypeConverter
+		      .printHexBinary(digest).toUpperCase();
+		    return myHash;
+		} catch (NoSuchAlgorithmException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		return rs;
+		return "N/A";
 	}
-	
-	public void disconnect() {
-		if(cn == null) return;
-		try {
-			cn.close();
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-	}
-	
 	
 }
