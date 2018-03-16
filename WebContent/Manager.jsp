@@ -38,7 +38,7 @@
         <li class="tab col s4"><a class="active" href="#fluege">Flüge</a></li>
         <li class="tab col s4"><a href="#flugzeuge">Flugzeuge</a></li>
         <li class="tab col s4"><a href="#relationen">Relationen</a></li>
-      </ul>
+      </ul>	
     </div>
     <div class="col s1"><ul><li><a class="waves-effect waves-light btn" style="height: 45px;line-height: -moz-block-height;" href="Logout.jsp">Logout</a></li></ul></div>
      
