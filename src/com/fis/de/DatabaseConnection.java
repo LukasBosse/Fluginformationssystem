@@ -37,12 +37,20 @@ public class DatabaseConnection {
 			st = cn.prepareStatement(query);
 			if(param != null) {
 				for(int i = 0; i < param.length; i++) {
-					st.setString(i+1, param[i]);
+					st.setString(i + 1, param[i]);
 				}
 			}
-			return st.execute(query);
+			st.executeUpdate();
+			return true;
 		} catch (SQLException e) {
 			e.printStackTrace();
+		} finally {
+			if(st != null)
+				try {
+					st.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
 		}
 		return false;
 	}
@@ -56,7 +64,7 @@ public class DatabaseConnection {
 					st.setString(i+1, param[i]);
 				}
 			}
-			rs = st.executeQuery(query);
+			rs = st.executeQuery();
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

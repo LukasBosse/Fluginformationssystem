@@ -7,7 +7,16 @@ body {
 	background-image: url('background.jpg');
 	background-attachment: fixed;
     background-size: cover;
-    overflow: hidden;
+    overflow-x: hidden;
 }
 
 .customPanel {}
+
+#logoutButton {
+	height: 45px;
+	line-height: -moz-block-height;
+}
+
+.alert {
+	border-radius: 1px !important;
+}
