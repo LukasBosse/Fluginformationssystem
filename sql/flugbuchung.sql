@@ -1,15 +1,13 @@
 -- phpMyAdmin SQL Dump
--- version 4.7.0
+-- version 4.6.5.2
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Erstellungszeit: 16. Mrz 2018 um 12:52
--- Server-Version: 10.1.25-MariaDB
--- PHP-Version: 7.1.7
+-- Erstellungszeit: 18. Mrz 2018 um 12:49
+-- Server-Version: 10.1.21-MariaDB
+-- PHP-Version: 5.6.30
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
-SET AUTOCOMMIT = 0;
-START TRANSACTION;
 SET time_zone = "+00:00";
 
 
@@ -107,6 +105,30 @@ INSERT INTO `flug` (`flugnr`, `start`, `ziel`, `flugzeit`, `km`) VALUES
 -- --------------------------------------------------------
 
 --
+-- Tabellenstruktur für Tabelle `flugzeuge`
+--
+
+CREATE TABLE `flugzeuge` (
+  `id` int(11) NOT NULL,
+  `hersteller` enum('Boeing','Airbus','Lockheed','Messerschmitt') NOT NULL,
+  `type` varchar(20) NOT NULL,
+  `sitze` int(11) NOT NULL,
+  `fluglinie` varchar(12) CHARACTER SET utf8 NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+--
+-- Daten für Tabelle `flugzeuge`
+--
+
+INSERT INTO `flugzeuge` (`id`, `hersteller`, `type`, `sitze`, `fluglinie`) VALUES
+(1, 'Boeing', 'A380', 500, 'AF123'),
+(2, 'Messerschmitt', 'BF 109', 1, 'AF123'),
+(3, 'Lockheed', 'L-1011 TriStar', 150, 'AF123'),
+(4, 'Boeing', '777', 777, 'AF123');
+
+-- --------------------------------------------------------
+
+--
 -- Tabellenstruktur für Tabelle `passagier`
 --
 
@@ -136,7 +158,7 @@ CREATE TABLE `users` (
   `ID` int(11) NOT NULL,
   `username` varchar(255) NOT NULL,
   `passwort` varchar(255) NOT NULL,
-  `type` int(11) NOT NULL
+  `type` int(2) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
@@ -170,6 +192,13 @@ ALTER TABLE `flug`
   ADD PRIMARY KEY (`flugnr`);
 
 --
+-- Indizes für die Tabelle `flugzeuge`
+--
+ALTER TABLE `flugzeuge`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `fluglinie` (`fluglinie`);
+
+--
 -- Indizes für die Tabelle `passagier`
 --
 ALTER TABLE `passagier`
@@ -185,6 +214,11 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT für exportierte Tabellen
 --
 
+--
+-- AUTO_INCREMENT für Tabelle `flugzeuge`
+--
+ALTER TABLE `flugzeuge`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 --
 -- AUTO_INCREMENT für Tabelle `users`
 --
@@ -206,7 +240,12 @@ ALTER TABLE `abflug`
 ALTER TABLE `buchung`
   ADD CONSTRAINT `fk_abflug_tag` FOREIGN KEY (`flugnr`,`tag`) REFERENCES `abflug` (`flugnr`, `tag`),
   ADD CONSTRAINT `fk_passagier_name_ort` FOREIGN KEY (`name`,`ort`) REFERENCES `passagier` (`name`, `ort`);
-COMMIT;
+
+--
+-- Constraints der Tabelle `flugzeuge`
+--
+ALTER TABLE `flugzeuge`
+  ADD CONSTRAINT `flugzeug_fluglinie` FOREIGN KEY (`fluglinie`) REFERENCES `flug` (`flugnr`);
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
