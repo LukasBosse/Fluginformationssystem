@@ -1,6 +1,9 @@
 <%@ page import="java.sql.ResultSet" %>
 <%@ page import="javax.servlet.http.HttpServletRequest" %>
 <%@ page import="com.fis.de.DatabaseConnection" %>
+<%@ page import="com.fis.de.HTMLWriter" %>
+<%@ page import="com.fis.de.Redirection" %>
+<%@ page import="com.fis.de.User" %>
 <%@ page import="com.fis.de.Verification" %>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
@@ -13,54 +16,55 @@
 	 <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 	 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
 	 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/css/materialize.min.css">
-	 <link rel="stylesheet" href="main.css">
+	 <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  	 <link rel="stylesheet" href="assets/css/main.css">
+
+
+	 <!-- Compiled and minified JavaScript -->
+	 <script type="text/javascript" src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+	 <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/js/materialize.min.js"></script>
+  
+	 <script>
+		 $(document).ready(function() {
+			   $('select').material_select();
+		 });
+	 </script>
 
 	 <title>Fluginformationssystem (FIS) - Manageransicht</title>
+	 
 </head>
 
 <body>
 
 <% 
 
-	if(session.getAttribute("userId") == null) {
-		response.sendRedirect("Main.jsp");
-	}
-	if(session.getAttribute("userType") != null) {
-		if(session.getAttribute("userType") != "Manager") {
-			response.sendRedirect("Main.jsp");
-		}
-	}
+	DatabaseConnection dbC = new DatabaseConnection();
+
+	new Redirection().checkDirection(session, response, "Manager");
+	HTMLWriter htmlWriter = new HTMLWriter(response.getWriter());	
+
 	if(request != null) {
 		if(request.getParameter("submitFlugAdd") != null) {
-			if(request.getParameter("flugNr") != null) {
+			if(request.getParameter("flugNr") != null && request.getParameter("flugzeug") != null) {
 				if(request.getParameter("startOrt") != null) {
 					if(request.getParameter("zielOrt") != null) {
 						if(request.getParameter("flugZeit") != null) {
-							if(request.getParameter("flugDistanz") != null) {
-								DatabaseConnection databaseConnection = new DatabaseConnection();
-								databaseConnection.connect();
+							if(request.getParameter("flugDistanz") != null) {			
+								dbC.connect();
 								String[] param = new String[] {
 										request.getParameter("flugNr").toString(),
+										request.getParameter("flugzeug").toString(),
 										request.getParameter("startOrt").toString(),
 										request.getParameter("zielOrt").toString(),
 										request.getParameter("flugZeit").toString(),									
 										request.getParameter("flugDistanz").toString()
 								};
-								if(databaseConnection.execute("INSERT INTO flug (flugnr, start, ziel, flugzeit, km) VALUES (?,?,?,?,?)", param)) {
-									response.getWriter().println("<div class='alert alert-success' role='alert'" +
-											"<strong>Erfolg!</strong> Ihr Flug wurde erfolgreich hinzugefügt." +
-											  "<button type='button' class='close' data-dismiss='alert' aria-label='Close'>" +
-											    "<span aria-hidden='true'>&times;</span>" +
-											  "</button>" +
-											"</div>");
+								if(dbC.execute("INSERT INTO flug (flugnr, flugzeug, start, ziel, flugzeit, km) VALUES (?,?,?,?,?,?)", param)) {
+									htmlWriter.writeAlert("Erfolg!", "Ihr Flug wurde erfolgreich hinzugefügt.", "alert-success");
 								} else {
-									response.getWriter().println("<div class='alert alert-danger' role='alert'" +
-											"<strong>Warnung!</strong> Ihr Flug wurde leider <u>nicht</u> erfolgreich hinzugefügt. Bitte überprüfen Sie Ihre Eingaben!" +
-											  "<button type='button' class='close' data-dismiss='alert' aria-label='Close'>" +
-											    "<span aria-hidden='true'>&times;</span>" +
-											  "</button>" +
-											"</div>");
-								}								
+									htmlWriter.writeAlert("Warnung!", "Ihr Flug wurde leider <u>nicht</u> erfolgreich hinzugefügt. Bitte überprüfen Sie Ihre Eingaben!", "alert-danger");
+								}
+								dbC.disconnect();
 							}	
 						}	
 					}	
@@ -68,96 +72,121 @@
 			}
 		}
 	}
-	
+		
 %>
 
-<h1 style="padding-left: 10px;">Hallo <% if(session.getAttribute("username") != null) out.println(session.getAttribute("username").toString()); %></h1>
+<!-- <h1>Hallo <% if(session.getAttribute("user") != null) out.println(((User)session.getAttribute("user")).getUsername()); %></h1>  -->
 
-  <div class="row">
-    <div class="col s11">
-      <ul class="tabs">
-        <li class="tab col s4"><a class="active" href="#fluege">Flüge</a></li>
-        <li class="tab col s4"><a href="#flugzeuge">Flugzeuge</a></li>
-        <li class="tab col s4"><a href="#relationen">Relationen</a></li>
-      </ul>	
+  <nav>
+    <div class="nav-wrapper">
+      <ul class="right"><li><a href="Logout.jsp" class="logoutBtn"><i class="material-icons">exit_to_app</i></a></li></ul>
+      <ul id="nav-mobile" class="left hide-on-med-and-down">
+        <li class="active"><a href="Manager.jsp"><i class="material-icons left">flight_takeoff</i> Flüge</a></li>
+        <li><a href="Flugzeuge.jsp"><i class="material-icons left">flight</i> Flugzeuge</a></li>
+        <li><a href="Relationen.jsp"><i class="material-icons left">date_range</i> Relationen</a></li>
+      </ul>
     </div>
-    <div class="col s1"><ul><li><a id="logoutButton" class="waves-effect waves-light btn" href="Logout.jsp">Logout</a></li></ul></div>
-     
-	    <div id="fluege" class="col s11 m11 customPanel">
-		    <div class="card horizontal">
-		      <div class="card-stacked">
-		        <div class="card-content">
-		        	<div class="row">
-		          		<form method="GET" class="col s12" action="<% out.println(request.getRequestURL());%>">
-		          			<div class="row">
-		          				<div class="input-field col s12">
-    						      <input id="flugNr" type="text" name="flugNr" class="validate" required>
-						          <label for="flugNr">Flugnummer</label>
-						        </div>
-		          			</div>
-		          			<div class="row">
-		          				<div class="input-field col s12">
-    						      <input id="startOrt" type="text" name="startOrt" class="validate" required>
-						          <label for="startOrt">Startort</label>
-						        </div>
-		          			</div>
-		          			<div class="row">
-		          				<div class="input-field col s12">
-		          				  <input id="zielOrt" type="text" name="zielOrt" class="validate" required>
-    							  <label for="zielOrt">Zielort</label>
-						        </div>
-		          			</div>
-		          			<div class="row">
-		          				<div class="input-field col s12">		          			
-    						      <input id="flugZeit" type="text" name="flugZeit" class="validate" required>
-						          <label for="flugZeit">Flugdauer <small><i>(in Stunden)</i></small></label>
-						        </div>
-		          			</div>
-		          			<div class="row">
-		          				<div class="input-field col s12">
-    						      <input id="flugDistanz" type="text" name="flugDistanz" class="validate" required>
-						          <label for="flugDistanz">Distanz <small><i>(in Kilometer)</i></small></label>
-						        </div>
-		          			</div>
-		         			<div class="row">
-		          				<div class="input-field col s12">
-								  <button class="btn waves-effect waves-light" type="submit" name="submitFlugAdd">Flug hinzufügen</button>
-						        </div>
-		          			</div>
-		          		</form>
-		          	</div>
-		        </div>
-		      </div>
-		    </div>
-	  </div>
-	  
-	  <div id="flugzeuge" class="col s11 m11 customPanel">
-		    <div class="card horizontal">
-		      <div class="card-stacked">
-		        <div class="card-content">
-		          <p>I am a very simple card. I am good at containing small bits of information.</p>
-		        </div>
-		      </div>
-		    </div>
-	  </div>
-	  
-	    <div id="relationen" class="col s11 m11 customPanel">
-		    <div class="card horizontal">
-		      <div class="card-stacked">
-		        <div class="card-content">
-		          <p>I am a very simple card. I am good at containing small bits of information.</p>
-		        </div>
-		      </div>
-		    </div>
-	  </div>
- 
-  </div>
+  </nav>
   
-  <!-- Compiled and minified JavaScript -->
-  <script type="text/javascript" src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/js/materialize.min.js"></script>
-  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script> 
-
+  <div class="row">
+	  <div id="fluege" class="col s5">
+			    <div class="card horizontal">
+			      <div class="card-stacked">
+			        <div class="card-content">
+			        	<div class="row">
+			          		<form method="GET" class="col s12" action="<% out.println(request.getRequestURL());%>">
+			          			<div class="row">
+			          				<div class="input-field col s12">
+	    						      <input id="flugNr" type="text" name="flugNr" class="validate" required>
+							          <label for="flugNr">Flugnummer</label>
+							        </div>
+			          			</div>
+			          			<div class="row">
+			          				<div class="input-field col s12">
+			          					<select id="flugzeuge" name="flugzeug" required>
+			          					    <option disabled selected value> -- Bitte wählen Sie ein Flugzeug aus -- </option>
+			          						<%
+			          							dbC.connect();
+							        		  	ResultSet resultSet = dbC.executeQuery("SELECT * FROM flugzeuge", null);
+							        		  	while(resultSet.next()) {
+							        		  		out.println("<option value='" + resultSet.getString("hersteller") + " - " + resultSet.getString("type") +"'>" + resultSet.getString("hersteller") + " | " + resultSet.getString("type") + " | (" + resultSet.getInt("sitze") + ")</option>");    
+							        		  	}
+							        		  	dbC.disconnect();
+			          						%>
+			          					</select>
+			          					<label for="flugzeuge">Flugzeuge</label>
+			          				</div>
+			          			</div>
+			          			<div class="row">
+			          				<div class="input-field col s6">
+	    						      <input id="startOrt" type="text" name="startOrt" class="validate" required>
+							          <label for="startOrt">Startort</label>
+							        </div>
+							        <div class="input-field col s6">
+			          				  <input id="zielOrt" type="text" name="zielOrt" class="validate" required>
+	    							  <label for="zielOrt">Zielort</label>
+							        </div>
+			          			</div>
+			          			<div class="row">
+			          				<div class="input-field col s12">		          			
+	    						      <input id="flugZeit" type="text" name="flugZeit" class="validate" required>
+							          <label for="flugZeit">Flugdauer <small><i>(in Stunden)</i></small></label>
+							        </div>
+			          			</div>
+			          			<div class="row">
+			          				<div class="input-field col s12">
+	    						      <input id="flugDistanz" type="text" name="flugDistanz" class="validate" required>
+							          <label for="flugDistanz">Distanz <small><i>(in Kilometer)</i></small></label>
+							        </div>
+			          			</div>
+			         			<div class="row">
+			          				<div class="input-field col s12">
+									  <button class="btn waves-effect waves-light" type="submit" name="submitFlugAdd">Flug hinzufügen</button>
+							        </div>
+			          			</div>
+			          		</form>
+			          	</div>
+			        </div>
+			      </div>
+			    </div>
+		  </div>
+		  <div class="col s7">
+		  	<div class="card">
+		      <table class="highlight centered">
+		        <thead>
+		          <tr>
+		              <th>Flugnummer</th>
+		              <th>Flugzeug</th>
+		              <th>Startort</th>
+		              <th>Zielort</th>
+		              <th>Flugdauer</th>
+		              <th>Distanz</th>
+		          </tr>
+		        </thead>
+		
+		        <tbody>
+		          <%
+		          
+		          	dbC.connect();
+					ResultSet rs = dbC.executeQuery("SELECT * FROM flug LIMIT 10", null);	
+					while(rs.next()) {
+						out.println("<tr>");
+						out.println("<td>" + rs.getString("flugnr") + "</td>");
+						out.println("<td>" + rs.getString("flugzeug") + "</td>");
+						out.println("<td>" + rs.getString("start") + "</td>");
+						out.println("<td>" + rs.getString("ziel") + "</td>");
+						out.println("<td>" + rs.getString("flugzeit") + "</td>");
+						out.println("<td>" + rs.getString("km") + "</td>");
+						out.println("</tr>");
+					}
+					dbC.disconnect(); 
+		   
+		          %>
+		        </tbody>
+		      </table>
+		  	</div>
+		  </div>
+	  </div>
 
 </body>
 </html>

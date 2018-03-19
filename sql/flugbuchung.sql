@@ -1,13 +1,15 @@
 -- phpMyAdmin SQL Dump
--- version 4.6.5.2
+-- version 4.7.0
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Erstellungszeit: 18. Mrz 2018 um 12:49
--- Server-Version: 10.1.21-MariaDB
--- PHP-Version: 5.6.30
+-- Erstellungszeit: 19. Mrz 2018 um 16:54
+-- Server-Version: 10.1.25-MariaDB
+-- PHP-Version: 7.1.7
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
+SET AUTOCOMMIT = 0;
+START TRANSACTION;
 SET time_zone = "+00:00";
 
 
@@ -19,6 +21,8 @@ SET time_zone = "+00:00";
 --
 -- Datenbank: `flugbuchung`
 --
+CREATE DATABASE IF NOT EXISTS `flugbuchung` DEFAULT CHARACTER SET latin1 COLLATE latin1_swedish_ci;
+USE `flugbuchung`;
 
 -- --------------------------------------------------------
 
@@ -86,6 +90,7 @@ INSERT INTO `buchung` (`name`, `ort`, `flugnr`, `tag`, `preis`) VALUES
 
 CREATE TABLE `flug` (
   `flugnr` varchar(12) NOT NULL,
+  `flugzeug` varchar(255) NOT NULL,
   `start` varchar(30) DEFAULT NULL,
   `ziel` varchar(30) DEFAULT NULL,
   `flugzeit` decimal(10,0) DEFAULT NULL,
@@ -96,11 +101,16 @@ CREATE TABLE `flug` (
 -- Daten für Tabelle `flug`
 --
 
-INSERT INTO `flug` (`flugnr`, `start`, `ziel`, `flugzeit`, `km`) VALUES
-('AF123', 'Paris', 'Frankfurt', '2', '500'),
-('LH222', 'Frankfurt', 'New York', '8', '6000'),
-('LH412', 'München', 'Los Angeles', '13', '110000'),
-('TA129', 'Paris', 'Frankfurt', '2', '650');
+INSERT INTO `flug` (`flugnr`, `flugzeug`, `start`, `ziel`, `flugzeit`, `km`) VALUES
+('AF123', 'Boeing - A380', 'Paris', 'Frankfurt', '2', '500'),
+('DE344', 'Lockheed - L-1011 TriStar', 'Bremen', 'München', '2', '800'),
+('DE454', 'Boeing - 777', 'Hannover', 'Berlin', '1', '250'),
+('KM343', 'Boeing - 777', 'Berlin', 'Hannover', '2', '300'),
+('LH222', 'Messerschmitt - BF 109', 'Frankfurt', 'New York', '8', '6000'),
+('LH412', 'Messerschmitt - BF 109', 'München', 'Los Angeles', '13', '110000'),
+('ME932', 'Boeing - A380', 'Bremen', 'München', '8', '700'),
+('NA454', 'Messerschmitt - BF 109', 'Hannover', 'Braunschweig', '1', '100'),
+('TA129', 'Lockheed - L-1011 TriStar', 'Paris', 'Frankfurt', '2', '650');
 
 -- --------------------------------------------------------
 
@@ -158,7 +168,7 @@ CREATE TABLE `users` (
   `ID` int(11) NOT NULL,
   `username` varchar(255) NOT NULL,
   `passwort` varchar(255) NOT NULL,
-  `type` int(2) NOT NULL
+  `type` varchar(255) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
@@ -166,7 +176,8 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`ID`, `username`, `passwort`, `type`) VALUES
-(1, 'Admin', '098f6bcd4621d373cade4e832627b4f6', 1);
+(1, 'Admin', '098f6bcd4621d373cade4e832627b4f6', 'Manager'),
+(2, 'Lukas', '098F6BCD4621D373CADE4E832627B4F6', 'Mitarbeiter');
 
 --
 -- Indizes der exportierten Tabellen
@@ -208,7 +219,8 @@ ALTER TABLE `passagier`
 -- Indizes für die Tabelle `users`
 --
 ALTER TABLE `users`
-  ADD PRIMARY KEY (`ID`);
+  ADD PRIMARY KEY (`ID`),
+  ADD UNIQUE KEY `username` (`username`);
 
 --
 -- AUTO_INCREMENT für exportierte Tabellen
@@ -223,7 +235,7 @@ ALTER TABLE `flugzeuge`
 -- AUTO_INCREMENT für Tabelle `users`
 --
 ALTER TABLE `users`
-  MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 --
 -- Constraints der exportierten Tabellen
 --
@@ -246,6 +258,7 @@ ALTER TABLE `buchung`
 --
 ALTER TABLE `flugzeuge`
   ADD CONSTRAINT `flugzeug_fluglinie` FOREIGN KEY (`fluglinie`) REFERENCES `flug` (`flugnr`);
+COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;

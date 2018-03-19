@@ -1,6 +1,8 @@
-<%@ page import="com.fis.de.Verification" %>
-<%@ page import="java.sql.ResultSet" %>
 <%@ page import="javax.servlet.http.HttpServletRequest" %>
+<%@ page import="java.sql.ResultSet" %>
+<%@ page import="com.fis.de.Redirection" %>
+<%@ page import="com.fis.de.User" %>
+<%@ page import="com.fis.de.Verification" %>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
@@ -11,27 +13,15 @@
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/css/materialize.min.css">
-  <link rel="stylesheet" href="main.css">
+  <link rel="stylesheet" href="assets/css/main.css">
 
 <title>Fluginformationssystem (FIS) - Mitarbeiteransicht</title>
 </head>
 <body>
 
-<% 
-	
-	if(session.getAttribute("userId") == null) {
-		response.sendRedirect("Main.jsp");
-	}
+<% new Redirection().checkDirection(session, response, "Mitarbeiter");%>
 
-	if(session.getAttribute("userType") != null) {
-		if(session.getAttribute("userType") != "Mitarbeiter") {
-			response.sendRedirect("Main.jsp");
-		}
-	}
-	
-%>
-
-<h1 style="padding-left: 10px;">Hallo <% if(session.getAttribute("username") != null) out.println(session.getAttribute("username").toString()); %></h1>
+<h1>Hallo <% if(session.getAttribute("user") != null) out.println(((User) session.getAttribute("user")).getUsername()); %></h1>
 
   <div class="row">
     <div class="col s11">
