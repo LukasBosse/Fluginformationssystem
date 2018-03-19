@@ -1,7 +1,4 @@
 <%@ page import="java.sql.ResultSet" %>
-<%@ page import="java.util.HashMap" %>
-<%@ page import="java.util.Map" %>
-<%@ page import="java.util.Iterator" %>
 <%@ page import="javax.servlet.http.HttpServletRequest" %>
 <%@ page import="com.fis.de.DatabaseConnection" %>
 <%@ page import="com.fis.de.HTMLWriter" %>
@@ -42,7 +39,6 @@
 <% 
 
 	DatabaseConnection dbC = new DatabaseConnection();
-	ResultSet rs;
 
 	new Redirection().checkDirection(session, response, "Manager");
 	HTMLWriter htmlWriter = new HTMLWriter(response.getWriter());	
@@ -111,9 +107,9 @@
 			          					    <option disabled selected value> -- Bitte wählen Sie ein Flugzeug aus -- </option>
 			          						<%
 			          							dbC.connect();
-							        		  	rs = dbC.executeQuery("SELECT * FROM flugzeuge", null);
-							        		  	while(rs.next()) {
-							        		  		out.println("<option value='" + rs.getInt("ID") +"'>" + rs.getString("hersteller") + " | " + rs.getString("type") + " | (" + rs.getInt("sitze") + ")</option>");    
+							        		  	ResultSet resultSet = dbC.executeQuery("SELECT * FROM flugzeuge", null);
+							        		  	while(resultSet.next()) {
+							        		  		out.println("<option value='" + resultSet.getString("hersteller") + " - " + resultSet.getString("type") +"'>" + resultSet.getString("hersteller") + " | " + resultSet.getString("type") + " | (" + resultSet.getInt("sitze") + ")</option>");    
 							        		  	}
 							        		  	dbC.disconnect();
 			          						%>
@@ -123,35 +119,11 @@
 			          			</div>
 			          			<div class="row">
 			          				<div class="input-field col s6">
-			          				  <select id="startOrt" name="startOrt" class="validate" required>
-			          				  	<option disabled selected value>Bitte wählen Sie einen Startflughafen aus</option>
-			          				  	 <%
-			          				  	 	dbC.connect();
-			          						rs = dbC.executeQuery("SELECT * FROM flughäfen", null);
-			          						HashMap<Integer, String> flughäfen = new HashMap<Integer, String>();
-		          							while(rs.next()) {
-		          								int flughafenID = rs.getInt("ID");
-		          								String bezeichnung = rs.getString("Bezeichnung");
-		          								flughäfen.put(flughafenID,bezeichnung);
-		          								out.println("<option value='" + flughafenID + "'>" + bezeichnung + "</option>");
-		          							}
-			          						dbC.disconnect();
-			          				  	 %>
-			          				  </select>
+	    						      <input id="startOrt" type="text" name="startOrt" class="validate" required>
 							          <label for="startOrt">Startort</label>
 							        </div>
 							        <div class="input-field col s6">
-							          <select id="zielOrt" name="zielOrt" class="validate" required>
-							          	 <option disabled selected value>Bitte wählen Sie einen Zielflughafen aus</option>
-							          	 <%
-							          	 	Iterator iT = flughäfen.entrySet().iterator();
-							        		while(iT.hasNext()) {
-							        			Map.Entry pair = (Map.Entry)iT.next();
-		          								out.println("<option value='" + pair.getKey() + "'>" + pair.getValue() + "</option>");
-		          								iT.remove();
-							        		}
-							          	 %>
-							          </select>
+			          				  <input id="zielOrt" type="text" name="zielOrt" class="validate" required>
 	    							  <label for="zielOrt">Zielort</label>
 							        </div>
 			          			</div>
@@ -196,15 +168,15 @@
 		          <%
 		          
 		          	dbC.connect();
-					rs = dbC.executeQuery("SELECT flug.flugnr, flugzeuge.hersteller, flugzeuge.type, startOrt.Bezeichnung As `Startort`, landeOrt.Bezeichnung As `Zielort`, flug.flugzeit, flug.km FROM flug INNER JOIN flugzeuge ON flug.flugzeug = flugzeuge.id INNER JOIN flughäfen As `startOrt` ON startOrt.ID = flug.start INNER JOIN flughäfen As `landeOrt` ON landeOrt.ID = flug.ziel ORDER BY timeStamp DESC LIMIT 10", null);	
+					ResultSet rs = dbC.executeQuery("SELECT * FROM flug LIMIT 10", null);	
 					while(rs.next()) {
 						out.println("<tr>");
-						out.println("<td>" + rs.getString("flug.flugnr") + "</td>");
-						out.println("<td>" + rs.getString("flugzeuge.hersteller") + " - " + rs.getString("flugzeuge.type") + "</td>");
-						out.println("<td>" + rs.getString("Startort") + "</td>");
-						out.println("<td>" + rs.getString("Zielort") + "</td>");
-						out.println("<td>" + rs.getString("flugzeit") + "h</td>");
-						out.println("<td>" + rs.getString("km") + "km</td>");
+						out.println("<td>" + rs.getString("flugnr") + "</td>");
+						out.println("<td>" + rs.getString("flugzeug") + "</td>");
+						out.println("<td>" + rs.getString("start") + "</td>");
+						out.println("<td>" + rs.getString("ziel") + "</td>");
+						out.println("<td>" + rs.getString("flugzeit") + "</td>");
+						out.println("<td>" + rs.getString("km") + "</td>");
 						out.println("</tr>");
 					}
 					dbC.disconnect(); 
