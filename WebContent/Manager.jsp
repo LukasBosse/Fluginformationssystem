@@ -64,9 +64,9 @@
 										request.getParameter("flugDistanz").toString()
 								};
 								if(dbC.execute("INSERT INTO flug (flugnr, flugzeug, start, ziel, flugzeit, km) VALUES (?,?,?,?,?,?)", param)) {
-									htmlWriter.writeAlert("Erfolg!", "Ihr Flug wurde erfolgreich hinzugefügt.", "alert-success");
+									htmlWriter.writeAlert("Erfolg!", "Ihr Flug wurde erfolgreich hinzugefügt.", "alert-success", "right");
 								} else {
-									htmlWriter.writeAlert("Warnung!", "Ihr Flug wurde leider <u>nicht</u> erfolgreich hinzugefügt. Bitte überprüfen Sie Ihre Eingaben!", "alert-danger");
+									htmlWriter.writeAlert("Warnung!", "Ihr Flug wurde leider <u>nicht</u> erfolgreich hinzugefügt. Bitte überprüfen Sie Ihre Eingaben!", "alert-danger", "right");
 								}
 								dbC.disconnect();
 							}	
@@ -91,7 +91,7 @@
   </nav>
   
   <div class="row">
-	  <div id="fluege" class="col s5">
+	  <div id="fluege" class="col s6">
 			    <div class="card horizontal">
 			      <div class="card-stacked">
 			        <div class="card-content">
@@ -176,7 +176,7 @@
 			      </div>
 			    </div>
 		  </div>
-		  <div class="col s7">
+		  <div class="col s6">
 		  	<div class="card">
 		      <table class="highlight centered">
 		        <thead>
@@ -189,22 +189,21 @@
 		              <th>Flugdauer</th>
 		              <th>Distanz</th>
 		          </tr>
-		        </thead>
-		
+		        </thead>		
 		        <tbody>
 		          <%
 		          
 		          	dbC.connect();
-					rs = dbC.executeQuery("SELECT flug.flugnr, flugzeuge.hersteller, flugzeuge.type, startOrt.Bezeichnung As `Startort`, landeOrt.Bezeichnung As `Zielort`, Count(b.name) As `Auslastung`, flugzeuge.sitze As `Kapazität`, flug.flugzeit, flug.km FROM flug INNER JOIN flugzeuge ON flug.flugzeug = flugzeuge.id INNER JOIN flughäfen As `startOrt` ON startOrt.ID = flug.start INNER JOIN flughäfen As `landeOrt` ON landeOrt.ID = flug.ziel INNER JOIN buchung As `b` ON b.flugnr = flug.flugnr GROUP BY flug.flugnr ORDER BY timeStamp DESC", null);	
+					rs = dbC.executeQuery("SELECT fZ.fluglinie, fZ.hersteller, fZ.type, fH.Bezeichnung As `Startort`, fHZ.Bezeichnung As `Zielort`, f.flugzeit, f.km , COUNT(b.flugnr) As `Auslastung`, fZ.sitze As `Kapazität` FROM `flugzeuge` As `fZ` INNER JOIN flug As `f` ON fZ.fluglinie = f.flugnr INNER JOIN flughäfen As `fH` ON fH.ID = f.start INNER JOIN flughäfen As `fHZ` ON fHZ.ID = f.ziel INNER JOIN buchung As `b` ON b.flugnr = fZ.fluglinie GROUP BY fZ.fluglinie ", null);	
 					while(rs.next()) {
 						out.println("<tr>");
-						out.println("<td>" + rs.getString("flug.flugnr") + "</td>");
-						out.println("<td>" + rs.getString("flugzeuge.hersteller") + " - " + rs.getString("flugzeuge.type") + "</td>");
+						out.println("<td>" + rs.getString("fz.fluglinie") + "</td>");
+						out.println("<td>" + rs.getString("fZ.hersteller") + " - " + rs.getString("fZ.type") + "</td>");
 						out.println("<td>" + rs.getString("Startort") + "</td>");
 						out.println("<td>" + rs.getString("Zielort") + "</td>");
 						out.println("<td>" + rs.getInt("Auslastung") + " / " + rs.getInt("Kapazität") + "</td>");
-						out.println("<td>" + rs.getString("flugzeit") + "h</td>");
-						out.println("<td>" + rs.getString("km") + "km</td>");
+						out.println("<td>" + rs.getString("f.flugzeit") + "h</td>");
+						out.println("<td>" + rs.getString("f.km") + "km</td>");
 						out.println("</tr>");
 					}
 					dbC.disconnect(); 

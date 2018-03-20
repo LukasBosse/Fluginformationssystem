@@ -37,9 +37,9 @@ public class Verification {
 		String[] param = { username, encryptedPassword, userType};
 		System.err.println(param);
 		if(dbC.execute("INSERT INTO users (username, passwort, type) VALUES (?,?,?)", param)) {
-			htmlWriter.writeAlert("Erfolg!", "Sie wurden erfolgreich registriert.", "alert-success");
+			htmlWriter.writeAlert("Erfolg!", "Sie wurden erfolgreich registriert.", "alert-success", "left");
 		} else {
-			htmlWriter.writeAlert("Warnung!", "Sie konnten leider nicht registriert werden. Bitte prüfen Sie Ihre Eingaben!", "alert-danger");			
+			htmlWriter.writeAlert("Warnung!", "Sie konnten leider nicht registriert werden. Bitte prüfen Sie Ihre Eingaben!", "alert-danger", "left");			
 		}
 		dbC.disconnect();
 	}
@@ -63,7 +63,7 @@ public class Verification {
 				dbC.disconnect();	
 			}
 		} 
-		htmlWriter.writeAlert("Warnung!", "Ihre Anmeldung ist leider fehlgeschlagen. Bitte prüfen Sie Ihre Eingaben!", "alert-danger");
+		htmlWriter.writeAlert("Warnung!", "Ihre Anmeldung ist leider fehlgeschlagen. Bitte prüfen Sie Ihre Eingaben!", "alert-danger", "left");
 	}
 
 	public static String toMD5(String pass) {

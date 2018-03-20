@@ -46,9 +46,9 @@
 	  		if(request.getParameter("hersteller") != null && request.getParameter("muster") != null && request.getParameter("sitze") != null && request.getParameter("fluggesellschaft") != null) {
 	  			dbC.connect();
 	  			if(dbC.execute("INSERT INTO flugzeuge (hersteller, type, sitze, fluggesellschaft) VALUES (?,?,?,?)", new String[] {request.getParameter("hersteller"),request.getParameter("muster"),request.getParameter("sitze"),request.getParameter("fluggesellschaft")})) {
-	  				htmlWriter.writeAlert("Erfolg!", "Das Flugzeug wurde erfolgreich hinzugefügt.", "alert-success");
+	  				htmlWriter.writeAlert("Erfolg!", "Das Flugzeug wurde erfolgreich hinzugefügt.", "alert-success", "left");
 				} else {
-					htmlWriter.writeAlert("Warnung!", "Das Flugzeug konnte nicht hinzugefügt werden. Bitte prüfen Sie Ihre Eingaben!", "alert-danger");
+					htmlWriter.writeAlert("Warnung!", "Das Flugzeug konnte nicht hinzugefügt werden. Bitte prüfen Sie Ihre Eingaben!", "alert-danger", "left");
 				}
 	  			dbC.disconnect();
 	  		}
@@ -57,9 +57,9 @@
 	  		if(request.getParameter("flug") != null && request.getParameter("flugzeug") != null) {
 	  			dbC.connect();
 	  			if(dbC.execute("UPDATE flugzeuge SET fluglinie = ? WHERE id = ?", new String[] {request.getParameter("flug"),request.getParameter("flugzeug")})) {
-	  				htmlWriter.writeAlert("Erfolg!", "Das Flugzeug wurde erfolgreich zugewiesen.", "alert-success");
+	  				htmlWriter.writeAlert("Erfolg!", "Das Flugzeug wurde erfolgreich zugewiesen.", "alert-success", "left");
 				} else {
-					htmlWriter.writeAlert("Warnung!", "Das Flugzeug konnte nicht zugewiesen werden. Bitte prüfen Sie Ihre Eingaben!", "alert-danger");
+					htmlWriter.writeAlert("Warnung!", "Das Flugzeug konnte nicht zugewiesen werden. Bitte prüfen Sie Ihre Eingaben!", "alert-danger", "left");
 				}
 	  			dbC.disconnect();
 	  		}
@@ -145,12 +145,13 @@
 	  					dbC.connect();
 	  					rs = dbC.executeQuery(" SELECT f.id, f.hersteller, f.type, f.sitze, f.fluglinie, g.Gesellschaft FROM flugzeuge As `f` INNER JOIN fluglinien As `g` ON g.ID = f.fluggesellschaft", null);
 	  					HashMap<Integer, String> flugzeugMap = new HashMap<Integer, String>();
+	  					int i = 1;
 	  					while(rs.next()) {
 	  						int flugzeugId = rs.getInt("f.id");
 	  						String flugzeugHersteller = rs.getString("f.hersteller");
 	  						String flugzeugMuster = rs.getString("f.type");
 	  						out.println("<tr>");
-		  						out.println("<td>" + flugzeugId + "</td>");
+		  						out.println("<td>" + i + "</td>");
 		  						out.println("<td>" + flugzeugHersteller + "</td>");
 		  						out.println("<td>" + flugzeugMuster + "</td>");
 		  						out.println("<td>" + rs.getInt("f.sitze") + "</td>");
@@ -162,6 +163,7 @@
 		  						out.println("<td>" + rs.getString("g.Gesellschaft") + "</td>");
 	  						out.println("</tr>");
 	  						flugzeugMap.put(flugzeugId, flugzeugHersteller + " - " + flugzeugMuster);
+	  						i++;
 	  					}
 	  					dbC.disconnect();
 	  				%>

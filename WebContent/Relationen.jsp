@@ -46,21 +46,25 @@
 			if(request.getParameter("submitFlughafenAdd") != null && request.getParameter("flughafenBezeichnung") != null) {
 				dbC.connect();
 				if(dbC.execute("INSERT INTO flughäfen (Bezeichnung) VALUES (?)", new String[] {request.getParameter("flughafenBezeichnung")})) {
-					htmlWriter.writeAlert("Erfolg!", "Der Flughafen wurden erfolgreich hinzugefügt.", "alert-success");
+					htmlWriter.writeAlert("Erfolg!", "Der Flughafen wurden erfolgreich hinzugefügt.", "alert-success", "left");
 				} else {
-					htmlWriter.writeAlert("Warnung!", "Der Flughafen konnte nicht hinzugefügt werden. Bitte prüfen Sie Ihre Eingaben!", "alert-danger");
+					htmlWriter.writeAlert("Warnung!", "Der Flughafen konnte nicht hinzugefügt werden. Bitte prüfen Sie Ihre Eingaben!", "alert-danger", "left");
 				}
 				dbC.disconnect();
 			}
 			if(request.getParameter("submitRelationAdd") != null) {
 				if(request.getParameter("startOrt") != null && request.getParameter("landeOrt") != null) {
-					dbC.connect();
-					if(dbC.execute("INSERT INTO relationen (Startort, Zielort) VALUES (?,?)", new String[] {request.getParameter("startOrt"),request.getParameter("landeOrt")})) {
-						htmlWriter.writeAlert("Erfolg!", "Die Relation wurden erfolgreich hinzugefügt.", "alert-success");
+					if(request.getParameter("startOrt").equals(request.getParameter("landeOrt"))) {
+						htmlWriter.writeAlert("Warnung!", "Ein Flughafen kann nicht gleichzeitig Start- und Zielort sein.", "alert-danger", "left");
 					} else {
-						htmlWriter.writeAlert("Warnung!", "Die Relation konnte nicht hinzugefügt werden. Bitte prüfen Sie Ihre Eingaben!", "alert-danger");
+						dbC.connect();
+						if(dbC.execute("INSERT INTO relationen (Startort, Zielort) VALUES (?,?)", new String[] {request.getParameter("startOrt"),request.getParameter("landeOrt")})) {
+							htmlWriter.writeAlert("Erfolg!", "Die Relation wurden erfolgreich hinzugefügt.", "alert-success", "left");
+						} else {
+							htmlWriter.writeAlert("Warnung!", "Die Relation konnte nicht hinzugefügt werden. Bitte prüfen Sie Ihre Eingaben!", "alert-danger", "left");
+						}
+						dbC.disconnect();
 					}
-					dbC.disconnect();
 				}
 			}
 		}
@@ -84,11 +88,11 @@
 			 <div class="card">
 			    <div class="card-content" style="padding-bottom: 5px !important;">
 			    	<form action="<% out.println(request.getRequestURL());%>" method="GET" class="row">
-			    		<div class="input-field col s10">
+			    		<div class="input-field col s9">
 			    			<input id="flughafen" name="flughafenBezeichnung" type="text" class="validate" required>
 			    			<label for="flughafen">Flughafen</label>
 			    		</div>
-			    		<div class="input-field col s2">
+			    		<div class="input-field col s3">
 							<button class="btn waves-effect waves-light" type="submit" name="submitFlughafenAdd">Flughafen hinzufügen</button>
 				        </div>
 			    	</form>
@@ -146,33 +150,7 @@
   	</div>
   	
   	<div class="row cardPanel">
-  		<div class="col s6">
-	  		<div class="card">
-	  			<div class="card-content">
-		  			 <table class="highlight centered">
-				        <thead>
-				          <tr>
-				              <th>ID</th>
-				              <th>Flughafen</th>
-				          </tr>
-				        </thead>
-				        <tbody>
-	  				<%
-	  					dbC.connect();
-					    rs = dbC.executeQuery("SELECT * FROM flughäfen", null);
-					    while(rs.next()) {
-					    	out.println("<tr>");
-					    	out.println("<td>" + rs.getInt("ID") +  "</td>");
-					    	out.println("<td>" + rs.getString("Bezeichnung") +  "</td>");
-					    	out.println("</tr>");
-					    }
-					    dbC.disconnect();
-	  				%>
-	  				  </tbody>
-			      </table>
-	  			</div>
-	  		</div>
-  		</div>
+  		<div class="col s6"></div>
   		<div class="col s6">
 	  		<div class="card">
 	  			<div class="card-content">
@@ -188,12 +166,14 @@
 	  				<%
 	  					dbC.connect();
 					    rs = dbC.executeQuery("SELECT relationen.ID, starthafen.Bezeichnung As `Starthafen`, landehafen.Bezeichnung As `Landehafen` FROM relationen INNER JOIN flughäfen As `starthafen` ON relationen.Startort = starthafen.ID INNER JOIN flughäfen As `landehafen` ON relationen.Zielort = landehafen.ID", null);
-					    while(rs.next()) {
+					    int i = 1;
+				        while(rs.next()) {
 					    	out.println("<tr>");
-					    	out.println("<td>" + rs.getInt("ID") + "</td>");
+					    	out.println("<td>" + i + "</td>");
 					    	out.println("<td>" + rs.getString("Starthafen") +  "</td>");
 					    	out.println("<td>" + rs.getString("Landehafen") +  "</td>");
 					    	out.println("</tr>");
+					    	i++;
 					    }
 					    dbC.disconnect();
 	  				%>
