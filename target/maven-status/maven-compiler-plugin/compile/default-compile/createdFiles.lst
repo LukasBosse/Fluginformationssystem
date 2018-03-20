@@ -1,1 +1,6 @@
 com\fis\de\Verification.class
+com\fis\de\Directory.class
+com\fis\de\User.class
+com\fis\de\DatabaseConnection.class
+com\fis\de\Redirection.class
+com\fis\de\HTMLWriter.class
