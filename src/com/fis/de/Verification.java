@@ -13,22 +13,12 @@ import javax.xml.bind.DatatypeConverter;
 public class Verification {
 	
 	private DatabaseConnection dbC;
-	private Directory dir = new Directory();
 	private HTMLWriter htmlWriter;
 
 	public Verification(HTMLWriter htmlWriter) {
 		this.htmlWriter = htmlWriter;
 		//initDatabaseConnection();
 		dbC = new DatabaseConnection();
-	}
-	
-	private void initDatabaseConnection() {
-		if(!dir.contains("databaseConnection")) {
-			dbC = new DatabaseConnection();
-			dir.put("databaseConnection", dbC);
-		} else {
-			dbC = (DatabaseConnection) dir.get("databaseConnection");
-		}
 	}
 	
 	public void register(String username, String userType, String password) {
@@ -75,7 +65,6 @@ public class Verification {
 		    String myHash = DatatypeConverter.printHexBinary(digest).toUpperCase();
 		    return myHash;
 		} catch (NoSuchAlgorithmException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return "N/A";

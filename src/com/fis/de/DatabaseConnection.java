@@ -65,7 +65,6 @@ public class DatabaseConnection {
 			}
 			rs = st.executeQuery();
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return rs;

@@ -27,7 +27,7 @@
 	 <!-- Compiled and minified JavaScript -->
 	 <script type="text/javascript" src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
 	 <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/js/materialize.min.js"></script>
-	 
+
 	 <title>Fluginformationssystem (FIS) - Mitarbeiteransicht</title>
 	 
  </head>
@@ -46,6 +46,15 @@
   			htmlWriter.writeAlert("Erfolg!", "Die Buchung wurde bestätigt.", "alert-success", "right");
   		} else {
   			htmlWriter.writeAlert("Warnung!", "Die Buchung wurde nicht erfolgreich bestätigt.", "alert-danger", "right");  			
+  		}
+  		dbC.disconnect();
+  	}
+  	if(request.getParameter("inklMahlzeit") != null) {
+  		dbC.connect();
+		if(dbC.execute("UPDATE flug SET inklusiveMahlzeit = !inklusiveMahlzeit WHERE flugnr = ?", new String[] {request.getParameter("inklMahlzeit")})) {
+  			htmlWriter.writeAlert("Erfolg!", "Dem Flug wurde eine Mahlzeit hinzugefügt.", "alert-success", "right");
+  		} else {
+  			htmlWriter.writeAlert("Warnung!", "Die Mahlzeit konnte nicht erfolgreich hinzugefügt werden..", "alert-danger", "right");  			
   		}
   		dbC.disconnect();
   	}
@@ -100,6 +109,42 @@
 	        	</table>
   			</div>
   		</div>
+  	</div>
+  	<div class="col s6">
+  		<div class="card">
+  			<div class="card-content">
+  				 <table class="highlight centered">
+		        	<thead>
+			          <tr>
+			          	  <th>ID</th>
+			              <th>Flugnummer</th>
+			              <th>Flugzeit</th>
+			              <th>Inklusive Mahlzeit</th>
+			          </tr>
+		        	</thead>		
+		        	<tbody>
+		        		<%
+		        			dbC.connect();
+		        			rs = dbC.executeQuery("SELECT flugnr, flugzeit, inklusiveMahlzeit FROM flug", null);
+		        			int counter = 1;
+		        			while(rs.next()) {
+		        				out.println("<tr>");
+		        				out.println("<td>" + counter +"</td>");
+		        				out.println("<td>" + rs.getString("flugnr") + "</td>");
+		        				out.println("<td>" + rs.getDouble("flugzeit") +"</td>");
+			        			out.println("<td><form action='" + request.getRequestURL() + "' method='GET'>");
+		        				out.println("<input type='checkbox' name='inklMahlzeit' onChange='this.form.submit();' value='" + rs.getString("flugnr") + "' id='" + counter + "'");
+		        				if(rs.getBoolean("inklusiveMahlzeit")) out.println("checked");
+		        				out.println("><label for='" + counter + "'></label></form></td>");
+		        				out.println("</tr>");
+		        				counter++;
+		        			}
+		        			dbC.disconnect();
+		        		%>
+		        	</tbody>
+	        	</table>
+  			</div>
+		</div>
   	</div>
   </div>
 
