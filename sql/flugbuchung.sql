@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: 127.0.0.1
--- Erstellungszeit: 19. Mrz 2018 um 20:52
+-- Erstellungszeit: 20. Mrz 2018 um 12:03
 -- Server Version: 5.6.21
 -- PHP-Version: 5.6.3
 
@@ -103,6 +103,7 @@ CREATE TABLE IF NOT EXISTS `flug` (
 INSERT INTO `flug` (`flugnr`, `flugzeug`, `start`, `ziel`, `flugzeit`, `km`, `timeStamp`) VALUES
 ('AF123', 2, 2, 4, '2', '500', '2018-03-19 18:29:48'),
 ('DE344', 1, 4, 2, '2', '800', '2018-03-19 18:29:48'),
+('DE394', 2, 2, 10, '2', '200', '2018-03-20 08:11:15'),
 ('DE454', 3, 3, 1, '1', '250', '2018-03-19 18:29:48'),
 ('GE444', 1, 1, 2, '2', '200', '2018-03-19 18:29:48'),
 ('GE453', 2, 1, 3, '2', '250', '2018-03-19 18:29:48'),
@@ -123,17 +124,48 @@ INSERT INTO `flug` (`flugnr`, `flugzeug`, `start`, `ziel`, `flugzeit`, `km`, `ti
 CREATE TABLE IF NOT EXISTS `flughäfen` (
 `ID` int(11) NOT NULL,
   `Bezeichnung` varchar(255) NOT NULL
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=19 DEFAULT CHARSET=latin1;
 
 --
 -- Daten für Tabelle `flughäfen`
 --
 
 INSERT INTO `flughäfen` (`ID`, `Bezeichnung`) VALUES
-(1, 'Hannover'),
 (2, 'Berlin'),
+(10, 'Bremen'),
+(1, 'Hannover'),
 (3, 'München'),
 (4, 'Stuttgart');
+
+-- --------------------------------------------------------
+
+--
+-- Tabellenstruktur für Tabelle `fluglinien`
+--
+
+CREATE TABLE IF NOT EXISTS `fluglinien` (
+`ID` int(11) NOT NULL,
+  `Bezeichnung` varchar(255) NOT NULL,
+  `Gesellschaft` varchar(255) NOT NULL
+) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=latin1;
+
+--
+-- Daten für Tabelle `fluglinien`
+--
+
+INSERT INTO `fluglinien` (`ID`, `Bezeichnung`, `Gesellschaft`) VALUES
+(1, '1I', 'Deutsche Rettungsflugwacht'),
+(2, '2A', 'Deutsche Bahn'),
+(3, '3D', 'Dokasch Air Cargo Equipment'),
+(4, '3S', 'Aerologic'),
+(5, '4U', 'Germanwings'),
+(6, '5P', 'ACM Air Charter'),
+(7, '6U', 'Air Cargo Germany'),
+(8, 'AB', 'Air Berlin'),
+(9, 'DE', 'Condor Flugdienst'),
+(10, 'EW', 'Eurowings'),
+(11, 'LH', 'Lufthansa'),
+(12, 'X3', 'TUIfly');
 
 -- --------------------------------------------------------
 
@@ -146,18 +178,24 @@ CREATE TABLE IF NOT EXISTS `flugzeuge` (
   `hersteller` enum('Boeing','Airbus','Lockheed','Messerschmitt') NOT NULL,
   `type` varchar(20) NOT NULL,
   `sitze` int(11) NOT NULL,
-  `fluglinie` varchar(12) CHARACTER SET utf8 NOT NULL
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=latin1;
+  `fluglinie` varchar(12) CHARACTER SET utf8 DEFAULT NULL,
+  `fluggesellschaft` int(11) NOT NULL
+) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=latin1;
 
 --
 -- Daten für Tabelle `flugzeuge`
 --
 
-INSERT INTO `flugzeuge` (`id`, `hersteller`, `type`, `sitze`, `fluglinie`) VALUES
-(1, 'Boeing', 'A380', 500, 'AF123'),
-(2, 'Messerschmitt', 'BF 109', 1, 'AF123'),
-(3, 'Lockheed', 'L-1011 TriStar', 150, 'AF123'),
-(4, 'Boeing', '777', 777, 'AF123');
+INSERT INTO `flugzeuge` (`id`, `hersteller`, `type`, `sitze`, `fluglinie`, `fluggesellschaft`) VALUES
+(1, 'Boeing', 'A380', 500, 'AF123', 2),
+(2, 'Messerschmitt', 'BF 109', 1, 'AF123', 1),
+(3, 'Lockheed', 'L-1011 TriStar', 150, 'AF123', 4),
+(4, 'Boeing', '777', 777, 'AF123', 5),
+(5, 'Boeing', '747', 450, 'LH412', 8),
+(6, 'Boeing', '747', 450, NULL, 8),
+(7, 'Boeing', '747', 450, NULL, 8),
+(8, 'Boeing', '747', 450, 'NA454', 8),
+(9, 'Boeing', '747', 450, NULL, 8);
 
 -- --------------------------------------------------------
 
@@ -191,7 +229,7 @@ CREATE TABLE IF NOT EXISTS `relationen` (
 `ID` int(11) NOT NULL,
   `Startort` int(11) NOT NULL,
   `Zielort` int(11) NOT NULL
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=latin1;
 
 --
 -- Daten für Tabelle `relationen`
@@ -199,7 +237,8 @@ CREATE TABLE IF NOT EXISTS `relationen` (
 
 INSERT INTO `relationen` (`ID`, `Startort`, `Zielort`) VALUES
 (1, 1, 2),
-(2, 2, 1);
+(2, 2, 1),
+(3, 10, 4);
 
 -- --------------------------------------------------------
 
@@ -248,7 +287,13 @@ ALTER TABLE `flug`
 -- Indizes für die Tabelle `flughäfen`
 --
 ALTER TABLE `flughäfen`
- ADD PRIMARY KEY (`ID`);
+ ADD PRIMARY KEY (`ID`), ADD UNIQUE KEY `Bezeichnung` (`Bezeichnung`);
+
+--
+-- Indizes für die Tabelle `fluglinien`
+--
+ALTER TABLE `fluglinien`
+ ADD PRIMARY KEY (`ID`), ADD UNIQUE KEY `Bezeichnung` (`Bezeichnung`), ADD UNIQUE KEY `Gesellschaft` (`Gesellschaft`);
 
 --
 -- Indizes für die Tabelle `flugzeuge`
@@ -282,17 +327,22 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT für Tabelle `flughäfen`
 --
 ALTER TABLE `flughäfen`
-MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=5;
+MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=19;
+--
+-- AUTO_INCREMENT für Tabelle `fluglinien`
+--
+ALTER TABLE `fluglinien`
+MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=14;
 --
 -- AUTO_INCREMENT für Tabelle `flugzeuge`
 --
 ALTER TABLE `flugzeuge`
-MODIFY `id` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=5;
+MODIFY `id` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=10;
 --
 -- AUTO_INCREMENT für Tabelle `relationen`
 --
 ALTER TABLE `relationen`
-MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=3;
+MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=4;
 --
 -- AUTO_INCREMENT für Tabelle `users`
 --
@@ -314,12 +364,6 @@ ADD CONSTRAINT `fk_flug_flugnr` FOREIGN KEY (`flugnr`) REFERENCES `flug` (`flugn
 ALTER TABLE `buchung`
 ADD CONSTRAINT `fk_abflug_tag` FOREIGN KEY (`flugnr`, `tag`) REFERENCES `abflug` (`flugnr`, `tag`),
 ADD CONSTRAINT `fk_passagier_name_ort` FOREIGN KEY (`name`, `ort`) REFERENCES `passagier` (`name`, `ort`);
-
---
--- Constraints der Tabelle `flugzeuge`
---
-ALTER TABLE `flugzeuge`
-ADD CONSTRAINT `flugzeug_fluglinie` FOREIGN KEY (`fluglinie`) REFERENCES `flug` (`flugnr`);
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;

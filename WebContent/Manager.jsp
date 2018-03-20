@@ -79,8 +79,6 @@
 		
 %>
 
-<!-- <h1>Hallo <% if(session.getAttribute("user") != null) out.println(((User)session.getAttribute("user")).getUsername()); %></h1>  -->
-
   <nav>
     <div class="nav-wrapper">
       <ul class="right"><li><a href="Logout.jsp" class="logoutBtn"><i class="material-icons">exit_to_app</i></a></li></ul>
@@ -187,6 +185,7 @@
 		              <th>Flugzeug</th>
 		              <th>Startort</th>
 		              <th>Zielort</th>
+		              <th>Auslastung</th>
 		              <th>Flugdauer</th>
 		              <th>Distanz</th>
 		          </tr>
@@ -196,13 +195,14 @@
 		          <%
 		          
 		          	dbC.connect();
-					rs = dbC.executeQuery("SELECT flug.flugnr, flugzeuge.hersteller, flugzeuge.type, startOrt.Bezeichnung As `Startort`, landeOrt.Bezeichnung As `Zielort`, flug.flugzeit, flug.km FROM flug INNER JOIN flugzeuge ON flug.flugzeug = flugzeuge.id INNER JOIN flughäfen As `startOrt` ON startOrt.ID = flug.start INNER JOIN flughäfen As `landeOrt` ON landeOrt.ID = flug.ziel ORDER BY timeStamp DESC LIMIT 10", null);	
+					rs = dbC.executeQuery("SELECT flug.flugnr, flugzeuge.hersteller, flugzeuge.type, startOrt.Bezeichnung As `Startort`, landeOrt.Bezeichnung As `Zielort`, Count(b.name) As `Auslastung`, flugzeuge.sitze As `Kapazität`, flug.flugzeit, flug.km FROM flug INNER JOIN flugzeuge ON flug.flugzeug = flugzeuge.id INNER JOIN flughäfen As `startOrt` ON startOrt.ID = flug.start INNER JOIN flughäfen As `landeOrt` ON landeOrt.ID = flug.ziel INNER JOIN buchung As `b` ON b.flugnr = flug.flugnr GROUP BY flug.flugnr ORDER BY timeStamp DESC", null);	
 					while(rs.next()) {
 						out.println("<tr>");
 						out.println("<td>" + rs.getString("flug.flugnr") + "</td>");
 						out.println("<td>" + rs.getString("flugzeuge.hersteller") + " - " + rs.getString("flugzeuge.type") + "</td>");
 						out.println("<td>" + rs.getString("Startort") + "</td>");
 						out.println("<td>" + rs.getString("Zielort") + "</td>");
+						out.println("<td>" + rs.getInt("Auslastung") + " / " + rs.getInt("Kapazität") + "</td>");
 						out.println("<td>" + rs.getString("flugzeit") + "h</td>");
 						out.println("<td>" + rs.getString("km") + "km</td>");
 						out.println("</tr>");

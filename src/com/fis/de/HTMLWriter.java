@@ -22,7 +22,7 @@ public class HTMLWriter extends PrintWriter {
 	}
 	
 	public void writeAlert(String title, String message, String type) {
-		write(("<div class='alert " + type + "'  role='alert'" +
+		write(("<div style='position: absolute; bottom: 0px; left: 15px;' class='alert " + type + "'  role='alert'" +
 				"<strong>" + title + "</strong> " + message +
 				  "<button type='button' class='close' data-dismiss='alert' aria-label='Close'>" +
 				    "<span aria-hidden='true'>&times;</span>" +

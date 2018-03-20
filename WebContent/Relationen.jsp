@@ -7,7 +7,6 @@
 <%@ page import="com.fis.de.HTMLWriter" %>
 <%@ page import="com.fis.de.Redirection" %>
 <%@ page import="com.fis.de.User" %>
-<%@ page import="com.fis.de.Verification" %>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
@@ -38,8 +37,35 @@
 </head>
 
 	<% 
+		new Redirection().checkDirection(session, response, "Manager");
 		DatabaseConnection dbC = new DatabaseConnection();
+		HTMLWriter htmlWriter = new HTMLWriter(response.getWriter());
 		ResultSet rs;
+		
+		if(request != null) {
+			if(request.getParameter("submitFlughafenAdd") != null && request.getParameter("flughafenBezeichnung") != null) {
+				dbC.connect();
+				if(dbC.execute("INSERT INTO flughäfen (Bezeichnung) VALUES (?)", new String[] {request.getParameter("flughafenBezeichnung")})) {
+					htmlWriter.writeAlert("Erfolg!", "Der Flughafen wurden erfolgreich hinzugefügt.", "alert-success");
+				} else {
+					htmlWriter.writeAlert("Warnung!", "Der Flughafen konnte nicht hinzugefügt werden. Bitte prüfen Sie Ihre Eingaben!", "alert-danger");
+				}
+				dbC.disconnect();
+			}
+			if(request.getParameter("submitRelationAdd") != null) {
+				if(request.getParameter("startOrt") != null && request.getParameter("landeOrt") != null) {
+					dbC.connect();
+					if(dbC.execute("INSERT INTO relationen (Startort, Zielort) VALUES (?,?)", new String[] {request.getParameter("startOrt"),request.getParameter("landeOrt")})) {
+						htmlWriter.writeAlert("Erfolg!", "Die Relation wurden erfolgreich hinzugefügt.", "alert-success");
+					} else {
+						htmlWriter.writeAlert("Warnung!", "Die Relation konnte nicht hinzugefügt werden. Bitte prüfen Sie Ihre Eingaben!", "alert-danger");
+					}
+					dbC.disconnect();
+				}
+			}
+		}
+		
+		
 	%>
 
   	<nav>
@@ -54,16 +80,16 @@
   	</nav>
   	
   	<div class="row cardPanel" style="padding-top: 10px;">
-  		 <div class="card horizontal col s12">
-			 <div class="card-stacked">
-			    <div class="card-content" style="padding-bottom: 0 !important;">
-			    	<form action="#" method="post" class="row">
+  		 <div class="col s12">
+			 <div class="card">
+			    <div class="card-content" style="padding-bottom: 5px !important;">
+			    	<form action="<% out.println(request.getRequestURL());%>" method="GET" class="row">
 			    		<div class="input-field col s10">
-			    			<input id="flughafen" name="" type="text" class="validate" required>
+			    			<input id="flughafen" name="flughafenBezeichnung" type="text" class="validate" required>
 			    			<label for="flughafen">Flughafen</label>
 			    		</div>
 			    		<div class="input-field col s2">
-							<button class="btn waves-effect waves-light" type="submit" name="submitFlugAdd">Flughafen hinzufügen</button>
+							<button class="btn waves-effect waves-light" type="submit" name="submitFlughafenAdd">Flughafen hinzufügen</button>
 				        </div>
 			    	</form>
 		        </div>
@@ -72,10 +98,10 @@
   	</div>
   	
   	<div class="row cardPanel">
-  		<div class="card horizontal col s12">
-  			<div class="card-stacked">
+  		<div class="col s12">
+  			<div class="card">
   				<div class="card-content" style="padding-bottom: 0 !important;">
-  					<form action="#" method="post" class="row">
+  					<form action="<% out.println(request.getRequestURL());%>" method="post" class="row">
 			        	<div class="input-field col s6">
 				        	<select id="startOrt" name="startOrt">
 				        		<option disabled selected value>Bitte wählen Sie einen Startflughafen aus</option>
@@ -110,7 +136,7 @@
 			        	</div>
 			        	<div class="row">
 			        		<div class="input-field col s12">
-			        			<button class="btn waves-effect waves-light" type="submit" name="submitFlugAdd">Relation hinzufügen</button>
+			        			<button class="btn waves-effect waves-light" type="submit" name="submitRelationAdd">Relation hinzufügen</button>
 			        		</div>
 			        	</div>        	
 			        </form>
