@@ -6,11 +6,9 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import javax.ejb.EJB;
-
 public class DatabaseConnection {
 
-	private final String DRIVER = "com.mysql.cj.jdbc.Driver";
+	private final String DRIVER = "com.mysql.jdbc.Driver";
 	private final String HOST = "localhost";
 	private final String PORT = "3306";
 	private final String DATABASE = "flugbuchung";

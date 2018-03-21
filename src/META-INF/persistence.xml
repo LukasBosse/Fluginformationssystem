@@ -5,10 +5,14 @@
    xsi:schemaLocation="http://java.sun.com/xml/ns/persistence 
    http://java.sun.com/xml/ns/persistence/persistence_2_0.xsd">
      	 
-   <persistence-unit name="MeineJpaPU" transaction-type="RESOURCE_LOCAL">
+   <persistence-unit name="JPA_CONNECTION" transaction-type="RESOURCE_LOCAL">
 
 	    <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
 	    <class>com.fis.model.User</class>
+	    <class>com.fis.model.Flug</class>
+	    <class>com.fis.model.Flugzeuge</class>
+	    <class>com.fis.model.Flughäfen</class>
+	    <class>com.fis.model.Buchung</class>
 	    <properties>
  		  <property name="javax.persistence.jdbc.driver" 	value="com.mysql.jdbc.Driver" />
   		  <property name="javax.persistence.jdbc.url" 		value="jdbc:mysql://localhost:3306/flugbuchung" />
@@ -19,10 +23,5 @@
 	    </properties>
 	    
   </persistence-unit>
-  
-   <persistence-unit name="Project-name">
-    	<jta-data-source>jdbc/flugbuchung</jta-data-source>
-    	<class>com.fis.model.User</class>
-	</persistence-unit>
         
 </persistence>

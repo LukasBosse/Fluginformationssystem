@@ -9,18 +9,18 @@ import javax.servlet.http.HttpSession;
 import javax.xml.bind.DatatypeConverter;
 
 import com.fis.model.User;
-import com.fis.services.UserDAO;
+import com.fis.services.UserDao;
 
 public class Verification {
 	
 	private HTMLWriter htmlWriter;	
-	private UserDAO userDao = new UserDAO();
+	private UserDao userDao = new UserDao();
 	
 	public Verification(HTMLWriter htmlWriter) { this.htmlWriter = htmlWriter; }
 	
 	public void register(String username, String userType, String password) {
 		User user = new User(username, toMD5(password), userType);
-		userDao.createUser(user);
+		userDao.create(user);
 		if(user.getId() != 0) {
 			htmlWriter.writeAlert("Erfolg!", "Sie wurden erfolgreich registriert.", "alert-success", "left");
 		} else {
