@@ -1,77 +1,73 @@
 package com.fis.de;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
+import java.io.IOException;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+import javax.xml.bind.DatatypeConverter;
 
 public class Verification {
+	
+	private DatabaseConnection dbC;
+	private HTMLWriter htmlWriter;
 
-	private final String DRIVER = "com.mysql.cj.jdbc.Driver";
-	private final String HOST = "localhost";
-	private final String PORT = "3306";
-	private final String DATABASE = "flugbuchung";
-	private final String USER = "root";
-	private final String PASSWORT = "";
-	
-	private Connection cn = null;
-	private PreparedStatement  st = null;
-	private ResultSet  rs = null;
-	
-	public Verification() {}
-	
-	public void connect() {
-		try {
-			Class.forName(DRIVER).newInstance();
-			cn = DriverManager.getConnection("jdbc:mysql://" + HOST + ":" + PORT + "/" + DATABASE + "?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC", USER, PASSWORT);
-		} catch (Exception ex) {
-			ex.printStackTrace();
-		}
+	public Verification(HTMLWriter htmlWriter) {
+		this.htmlWriter = htmlWriter;
+		//initDatabaseConnection();
+		dbC = new DatabaseConnection();
 	}
 	
-	public boolean execute(String query, String[] param) {
-		if(cn == null) { return false; }
-		try {
-			st = cn.prepareStatement(query);
-			if(param != null) {
-				for(int i = 0; i < param.length; i++) {
-					st.setString(i+1, param[i]);
+	public void register(String username, String userType, String password) {
+		dbC.connect();
+		String encryptedPassword = toMD5(password);
+		String[] param = { username, encryptedPassword, userType};
+		System.err.println(param);
+		if(dbC.execute("INSERT INTO users (username, passwort, type) VALUES (?,?,?)", param)) {
+			htmlWriter.writeAlert("Erfolg!", "Sie wurden erfolgreich registriert.", "alert-success", "left");
+		} else {
+			htmlWriter.writeAlert("Warnung!", "Sie konnten leider nicht registriert werden. Bitte prüfen Sie Ihre Eingaben!", "alert-danger", "left");			
+		}
+		dbC.disconnect();
+	}
+	
+	public void login(String username, String password, HttpSession session, HttpServletRequest request, HttpServletResponse response) {
+		dbC.connect();
+		String encryptedPassword = toMD5(password);	
+		ResultSet rs = dbC.executeQuery("SELECT * FROM users WHERE username = '" + username + "' AND passwort = '" + encryptedPassword + "' LIMIT 1", null);
+		if(rs != null) {
+			try {
+				while(rs.next()) {
+					User user = new User(rs.getInt("ID"), username, rs.getString("type"));
+					session.setAttribute("user", user);
+					response.sendRedirect(user.getUserType() + ".jsp");
 				}
+			} catch (SQLException e) {
+				e.printStackTrace();
+			} catch (IOException e) {
+				e.printStackTrace();
+			} finally {
+				dbC.disconnect();	
 			}
-			return st.execute(query);
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-		return false;
+		} 
+		htmlWriter.writeAlert("Warnung!", "Ihre Anmeldung ist leider fehlgeschlagen. Bitte prüfen Sie Ihre Eingaben!", "alert-danger", "left");
 	}
-	
-	public ResultSet executeQuery(String query, String[] param) {
-		if(cn == null) { return null; }
+
+	public static String toMD5(String pass) {
+		MessageDigest md;
 		try {
-			st = cn.prepareStatement(query);
-			if(param != null) {
-				for(int i = 0; i < param.length; i++) {
-					st.setString(i+1, param[i]);
-				}
-			}
-			rs = st.executeQuery(query);
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
+			md = MessageDigest.getInstance("MD5");
+			md.update(pass.getBytes());
+		    byte[] digest = md.digest();
+		    String myHash = DatatypeConverter.printHexBinary(digest).toUpperCase();
+		    return myHash;
+		} catch (NoSuchAlgorithmException e) {
 			e.printStackTrace();
 		}
-		return rs;
+		return "N/A";
 	}
-	
-	public void disconnect() {
-		if(cn == null) return;
-		try {
-			cn.close();
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-	}
-	
 	
 }

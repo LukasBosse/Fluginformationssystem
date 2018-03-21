@@ -4,7 +4,6 @@
 <%@ page import="com.fis.de.DatabaseConnection"%>
 <%@ page import="com.fis.de.Directory"%>
 <%@ page import="com.fis.de.HTMLWriter"%>
-<%@ page import="com.fis.de.User"%>
 <%@ page import="com.fis.de.Verification"%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
@@ -21,24 +20,31 @@
 	href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/css/materialize.min.css">
 <link rel="stylesheet" href="assets/css/main.css">
 
+<!-- Compiled and minified JavaScript -->
+<script type="text/javascript"
+	src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+<script
+	src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/js/materialize.min.js"></script>
+
+<script>
+  $(document).ready(function() {
+	    $('select').material_select();
+	});
+  </script>
+
 <title>Fluginformationssystem (FIS)</title>
 </head>
 <body>
 
-	<%
-	
-		if(request != null) {
-			if(session.getAttribute("user") != null) {
-				User user = (User) session.getAttribute("user");
-				response.sendRedirect(user.getUserType() + ".jsp");
-			}
-			if(request.getParameter("login") != null && request.getParameter("username") != null && request.getParameter("passwort") != null) {
-				Verification verification = new Verification(new HTMLWriter(response.getWriter()));
-				verification.login(request.getParameter("username"), request.getParameter("passwort"), session, request, response);
-			}
+	<% 
+	if(request.getParameter("register") != null) {
+		System.err.println("Failed!");
+		if(request.getParameter("username") != null && request.getParameter("passwort") != null && request.getParameter("userType") != null) {
+			Verification verification = new Verification(new HTMLWriter(response.getWriter()));
+			verification.register(request.getParameter("username").toString(), request.getParameter("userType").toString(), request.getParameter("passwort").toString());
 		}
-	%>
-
+	}
+%>
 
 	<div class="row" style="margin-top: 100px;">
 
@@ -61,6 +67,18 @@
 
 					<div class="row">
 						<div class="input-field col m11">
+							<i class="material-icons prefix">account_circle</i> <select
+								id="userType" name="userType" required>
+								<option disabled selected value>-- Bitte wählen Sie
+									eine Benutzerart aus --</option>
+								<option value="Mitarbeiter">Mitarbeiter</option>
+								<option value="Manager">Manager</option>
+							</select> <label for="userType">Benutzerart</label>
+						</div>
+					</div>
+
+					<div class="row">
+						<div class="input-field col m11">
 							<i class="material-icons prefix">account_circle</i> <input
 								id="passwort" name="passwort" type="password" class="validate"
 								required> <label for="passwort">Passwort</label>
@@ -70,12 +88,12 @@
 					<div class="row">
 						<div class="input-field col">
 							<button class="btn waves-effect waves-light" type="submit"
-								name="login">Absenden</button>
+								name="register">Absenden</button>
 						</div>
 				</form>
 				<div class="input-field col">
-					<a href="Registrierung.jsp"><button type="button"
-							class="btn waves-effect waves-light">Zur Registrierung</button></a>
+					<a href="Main.jsp"><button type="button"
+							class="btn waves-effect waves-light">Zum Login</button></a>
 				</div>
 			</div>
 
@@ -88,14 +106,6 @@
 
 
 	</div>
-
-	<!-- Compiled and minified JavaScript -->
-	<script type="text/javascript"
-		src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
-	<script
-		src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/js/materialize.min.js"></script>
-	<script
-		src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 
 </body>
 </html>
