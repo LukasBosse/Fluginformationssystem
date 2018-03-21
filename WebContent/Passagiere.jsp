@@ -6,7 +6,7 @@
 <%@ page import="com.fis.de.DatabaseConnection" %>
 <%@ page import="com.fis.de.HTMLWriter" %>
 <%@ page import="com.fis.de.Redirection" %>
-<%@ page import="com.fis.de.User" %>
+<%@ page import="com.fis.model.User" %>
 <%@ page import="com.fis.de.Verification" %>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">

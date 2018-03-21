@@ -7,7 +7,7 @@ body {
 	background-image: url('../images/background.jpg');
 	background-attachment: fixed;
     background-size: cover;
-    overflow-x: hidden;
+    overflow: hidden;
 }
 
 h1 {
@@ -35,4 +35,21 @@ h1 {
 a:hover {
 	text-decoration: none;
 	color: white;
+}
+
+tbody {
+    display:block;
+    height: auto;
+    overflow:auto;
+}
+thead, tbody tr {
+    display:table;
+    width:100%;
+    table-layout:fixed;
+}
+thead {
+    width: calc( 100% - 1em )
+}
+table {
+    width:100%;
 }

@@ -4,7 +4,7 @@
 <%@ page import="com.fis.de.DatabaseConnection"%>
 <%@ page import="com.fis.de.HTMLWriter"%>
 <%@ page import="com.fis.de.Redirection"%>
-<%@ page import="com.fis.de.User"%>
+<%@ page import="com.fis.model.User" %>
 <%@ page import="com.fis.de.Verification"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"%>
@@ -75,10 +75,9 @@
 				<div class="card-content">
 					<div class="row">
 						<form action="#" method="GET">
-							<div class="input-field col s10">
+							<div class="input-field col s9">
 								<select id="flugnr" name="flugnr">
-									<option disabled selected value>-- Bitte wählen Sie
-										eine Fluglinie aus --</option>
+									<option disabled selected value>-- Bitte wählen Sie eine Fluglinie aus --</option>
 									<%
 			  						dbC.connect();
 			  						rs = dbC.executeQuery("SELECT flugnr FROM flug", null);
@@ -89,7 +88,7 @@
 			  					%>
 								</select> <label for="flugnr">Flugnummer</label>
 							</div>
-							<div class="input-field col s2">
+							<div class="input-field col s3">
 								<button class="btn waves-effect waves-light" type="submit"
 									name="loadFlugDataByFlugNr">Suchen</button>
 							</div>
@@ -142,10 +141,9 @@
 				<div class="card-content">
 					<div class="row">
 						<form action="#" method="GET">
-							<div class="input-field col s10">
+							<div class="input-field col s9">
 								<select id="user" name="user">
-									<option disabled selected value>-- Bitte wählen Sie
-										eine Kundennamen aus --</option>
+									<option disabled selected value>-- Bitte wählen Sie eine Kundennamen aus --</option>
 									<%
 			  						dbC.connect();
 			  						rs = dbC.executeQuery("SELECT name FROM passagier", null);
@@ -156,7 +154,7 @@
 			  					%>
 								</select> <label for="user">Kundenname</label>
 							</div>
-							<div class="input-field col s2">
+							<div class="input-field col s3">
 								<button class="btn waves-effect waves-light" type="submit"
 									name="loadFlugDataByUser">Suchen</button>
 							</div>

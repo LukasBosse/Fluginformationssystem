@@ -1,12 +1,15 @@
 <%@ page import="java.sql.ResultSet" %>
 <%@ page import="java.util.HashMap" %>
 <%@ page import="java.util.Map" %>
+<%@ page import="java.util.Date" %>
+<%@ page import="java.text.SimpleDateFormat" %>
+<%@ page import="java.text.DateFormat" %>
 <%@ page import="java.util.Iterator" %>
 <%@ page import="javax.servlet.http.HttpServletRequest" %>
 <%@ page import="com.fis.de.DatabaseConnection" %>
 <%@ page import="com.fis.de.HTMLWriter" %>
 <%@ page import="com.fis.de.Redirection" %>
-<%@ page import="com.fis.de.User" %>
+<%@ page import="com.fis.model.User" %>
 <%@ page import="com.fis.de.Verification" %>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
@@ -30,7 +33,23 @@
 	 <script>
 		 $(document).ready(function() {
 			   $('select').material_select();
+			   $('.timepicker').pickatime({
+			    default: 'now', 
+			    fromnow: 0,      
+			    twelvehour: false,
+			    donetext: 'OK',
+		        format: "HH:ii:SS",
+		        cleartext: 'Clear',
+			    canceltext: 'Cancel',
+			    autoclose: false,
+			    ampmclickable: true,
+			    aftershow: function(){}
+			  });
 		 });
+	    $('.timepicker').on('change', function() {
+	        let receivedVal = $(this).val();
+	        $(this).val(receivedVal + ":00");
+	    });
 	 </script>
 
 	 <title>Fluginformationssystem (FIS) - Manageransicht</title>
@@ -52,18 +71,26 @@
 			if(request.getParameter("flugNr") != null && request.getParameter("flugzeug") != null) {
 				if(request.getParameter("startOrt") != null) {
 					if(request.getParameter("zielOrt") != null) {
-						if(request.getParameter("flugZeit") != null) {
+						if(request.getParameter("startZeit") != null && request.getParameter("landeZeit") != null) {
 							if(request.getParameter("flugDistanz") != null) {			
 								dbC.connect();
+								DateFormat format = new SimpleDateFormat("HH:mm");
+								Date startZeit = format.parse(request.getParameter("startZeit"));
+								Date landeZeit = format.parse(request.getParameter("landeZeit"));
+								long zeitDifferenz = (landeZeit.getTime() - startZeit.getTime());
+								long flugDauerInH = zeitDifferenz / (60 * 60 * 1000) % 24;
+								long flugDauerInM = zeitDifferenz / (60 * 1000) % 60;
 								String[] param = new String[] {
-										request.getParameter("flugNr").toString(),
-										request.getParameter("flugzeug").toString(),
-										request.getParameter("startOrt").toString(),
-										request.getParameter("zielOrt").toString(),
-										request.getParameter("flugZeit").toString(),									
-										request.getParameter("flugDistanz").toString()
+										request.getParameter("flugNr"),
+										request.getParameter("flugzeug"),
+										request.getParameter("startOrt"),
+										request.getParameter("zielOrt"),
+										request.getParameter("startZeit"),
+										request.getParameter("landeZeit"),
+										String.valueOf(flugDauerInH + "." + flugDauerInM),									
+										request.getParameter("flugDistanz")
 								};
-								if(dbC.execute("INSERT INTO flug (flugnr, flugzeug, start, ziel, flugzeit, km) VALUES (?,?,?,?,?,?)", param)) {
+								if(dbC.execute("INSERT INTO flug (flugnr, flugzeug, start, ziel, startzeit, landezeit, flugzeit, km) VALUES (?,?,?,?,?,?,?,?)", param)) {
 									htmlWriter.writeAlert("Erfolg!", "Ihr Flug wurde erfolgreich hinzugefügt.", "alert-success", "right");
 								} else {
 									htmlWriter.writeAlert("Warnung!", "Ihr Flug wurde leider <u>nicht</u> erfolgreich hinzugefügt. Bitte überprüfen Sie Ihre Eingaben!", "alert-danger", "right");
@@ -105,7 +132,7 @@
 			          			</div>
 			          			<div class="row">
 			          				<div class="input-field col s12">
-			          					<select id="flugzeuge" name="flugzeug" required>
+			          					<select id="flugzeuge" name="flugzeug" class="validate" required>
 			          					    <option disabled selected value> -- Bitte wählen Sie ein Flugzeug aus -- </option>
 			          						<%
 			          							dbC.connect();
@@ -154,10 +181,14 @@
 							        </div>
 			          			</div>
 			          			<div class="row">
-			          				<div class="input-field col s12">		          			
-	    						      <input id="flugZeit" type="text" name="flugZeit" class="validate" required>
-							          <label for="flugZeit">Flugdauer <small><i>(in Stunden)</i></small></label>
-							        </div>
+			          				<div class="input-field col s6">
+			          					<input id="startZeit" name="startZeit" class="timepicker validate" required>
+			          					<label for="startZeit">Startzeit</label>          			
+			          				</div>
+			          				<div class="input-field col s6">
+			          					<input id="landeZeit" name="landeZeit" class="timepicker validate" required>
+			          					<label for="landeZeit">Landezeit</label>          			
+			          				</div>
 			          			</div>
 			          			<div class="row">
 			          				<div class="input-field col s12">

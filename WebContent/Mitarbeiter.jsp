@@ -6,7 +6,7 @@
 <%@ page import="com.fis.de.DatabaseConnection" %>
 <%@ page import="com.fis.de.HTMLWriter" %>
 <%@ page import="com.fis.de.Redirection" %>
-<%@ page import="com.fis.de.User" %>
+<%@ page import="com.fis.model.User" %>
 <%@ page import="com.fis.de.Verification" %>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
@@ -42,7 +42,7 @@
   	
   	if(request.getParameter("bestaetigt") != null) {
   		dbC.connect();
-  		if(dbC.execute("UPDATE buchung SET bestaetigt = true WHERE ID = ?", new String[] {request.getParameter("bestaetigt")})) {
+  		if(dbC.execute("UPDATE buchung SET bestaetigt = bestaetigt WHERE ID = ?", new String[] {request.getParameter("bestaetigt")})) {
   			htmlWriter.writeAlert("Erfolg!", "Die Buchung wurde bestätigt.", "alert-success", "right");
   		} else {
   			htmlWriter.writeAlert("Warnung!", "Die Buchung wurde nicht erfolgreich bestätigt.", "alert-danger", "right");  			
@@ -132,10 +132,10 @@
 		        				out.println("<td>" + counter +"</td>");
 		        				out.println("<td>" + rs.getString("flugnr") + "</td>");
 		        				out.println("<td>" + rs.getDouble("flugzeit") +"</td>");
-			        			out.println("<td><form action='" + request.getRequestURL() + "' method='GET'>");
+			        			out.println("<td><form action='' method='GET'>");
 		        				out.println("<input type='checkbox' name='inklMahlzeit' onChange='this.form.submit();' value='" + rs.getString("flugnr") + "' id='" + counter + "'");
 		        				if(rs.getBoolean("inklusiveMahlzeit")) out.println("checked");
-		        				out.println("><label for='" + counter + "'></label></form></td>");
+		        				out.println("/><label for='" + counter + "'></label></form></td>");
 		        				out.println("</tr>");
 		        				counter++;
 		        			}

@@ -6,6 +6,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+import javax.ejb.EJB;
+
 public class DatabaseConnection {
 
 	private final String DRIVER = "com.mysql.cj.jdbc.Driver";
