@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: 127.0.0.1
--- Erstellungszeit: 20. Mrz 2018 um 21:55
+-- Erstellungszeit: 21. Mrz 2018 um 23:59
 -- Server Version: 5.6.21
 -- PHP-Version: 5.6.3
 
@@ -94,8 +94,10 @@ CREATE TABLE IF NOT EXISTS `flug` (
   `flugzeug` int(11) NOT NULL,
   `start` int(11) DEFAULT NULL,
   `ziel` int(11) DEFAULT NULL,
-  `flugzeit` decimal(10,0) DEFAULT NULL,
-  `km` decimal(10,0) DEFAULT NULL,
+  `Startzeit` time NOT NULL,
+  `Landezeit` time NOT NULL,
+  `flugzeit` decimal(10,2) DEFAULT NULL,
+  `km` int(11) DEFAULT NULL,
   `timeStamp` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `inklusiveMahlzeit` tinyint(1) NOT NULL DEFAULT '0'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -104,11 +106,23 @@ CREATE TABLE IF NOT EXISTS `flug` (
 -- Daten für Tabelle `flug`
 --
 
-INSERT INTO `flug` (`flugnr`, `flugzeug`, `start`, `ziel`, `flugzeit`, `km`, `timeStamp`, `inklusiveMahlzeit`) VALUES
-('AF123', 2, 2, 4, '2', '500', '2018-03-19 18:29:48', 1),
-('LH222', 1, 3, 2, '8', '6000', '2018-03-19 18:29:48', 1),
-('LH412', 2, 1, 4, '13', '110000', '2018-03-19 18:29:48', 1),
-('TA129', 6, 2, 1, '2', '650', '2018-03-19 18:29:48', 1);
+INSERT INTO `flug` (`flugnr`, `flugzeug`, `start`, `ziel`, `Startzeit`, `Landezeit`, `flugzeit`, `km`, `timeStamp`, `inklusiveMahlzeit`) VALUES
+('AF123', 2, 2, 4, '00:00:00', '00:00:00', '2.00', 500, '2018-03-19 18:29:48', 1),
+('AY359', 4, 2, 3, '22:10:00', '23:20:00', '1.10', 433, '2018-03-21 21:37:18', 0),
+('DA359', 4, 2, 3, '22:10:00', '23:20:00', '1.00', 433, '2018-03-21 21:33:22', 0),
+('DA959', 4, 2, 3, '22:10:00', '23:20:00', '1.00', 433, '2018-03-21 21:34:26', 0),
+('DE349', 4, 2, 3, '22:10:00', '23:20:00', '1.00', 433, '2018-03-21 21:27:06', 0),
+('DE359', 4, 2, 3, '22:10:00', '23:20:00', '11.00', 433, '2018-03-21 21:27:28', 0),
+('DE399', 4, 2, 3, '22:10:00', '23:20:00', '1.00', 433, '2018-03-21 21:25:39', 0),
+('DE459', 4, 2, 3, '22:10:00', '23:20:00', '1.00', 433, '2018-03-21 21:28:33', 0),
+('DE559', 4, 2, 3, '22:10:00', '23:20:00', '1.00', 433, '2018-03-21 21:29:07', 0),
+('DG559', 4, 2, 3, '22:10:00', '23:20:00', '1.00', 433, '2018-03-21 21:30:19', 0),
+('DM959', 4, 2, 3, '22:10:00', '23:20:00', '1.00', 433, '2018-03-21 21:34:10', 0),
+('DN359', 4, 2, 3, '22:10:00', '23:20:00', '1.00', 433, '2018-03-21 21:32:50', 0),
+('DN559', 4, 2, 3, '22:10:00', '23:20:00', '1.00', 433, '2018-03-21 21:30:59', 0),
+('LH222', 1, 3, 2, '00:00:00', '00:00:00', '8.00', 6000, '2018-03-19 18:29:48', 1),
+('LH412', 2, 1, 4, '00:00:00', '00:00:00', '13.00', 110000, '2018-03-19 18:29:48', 1),
+('TA129', 6, 2, 1, '00:00:00', '00:00:00', '2.00', 650, '2018-03-19 18:29:48', 1);
 
 -- --------------------------------------------------------
 
@@ -119,7 +133,7 @@ INSERT INTO `flug` (`flugnr`, `flugzeug`, `start`, `ziel`, `flugzeit`, `km`, `ti
 CREATE TABLE IF NOT EXISTS `flughäfen` (
 `ID` int(11) NOT NULL,
   `Bezeichnung` varchar(255) NOT NULL
-) ENGINE=InnoDB AUTO_INCREMENT=19 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=latin1;
 
 --
 -- Daten für Tabelle `flughäfen`
@@ -142,7 +156,7 @@ CREATE TABLE IF NOT EXISTS `fluglinien` (
 `ID` int(11) NOT NULL,
   `Bezeichnung` varchar(255) NOT NULL,
   `Gesellschaft` varchar(255) NOT NULL
-) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=latin1;
 
 --
 -- Daten für Tabelle `fluglinien`
@@ -175,7 +189,7 @@ CREATE TABLE IF NOT EXISTS `flugzeuge` (
   `sitze` int(11) NOT NULL,
   `fluglinie` varchar(12) CHARACTER SET utf8 DEFAULT NULL,
   `fluggesellschaft` int(11) NOT NULL
-) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=latin1;
 
 --
 -- Daten für Tabelle `flugzeuge`
@@ -250,7 +264,7 @@ CREATE TABLE IF NOT EXISTS `users` (
 --
 
 INSERT INTO `users` (`ID`, `username`, `passwort`, `type`) VALUES
-(1, 'Admin', '098f6bcd4621d373cade4e832627b4f6', 'Manager'),
+(1, 'Admin', '098F6BCD4621D373CADE4E832627B4F6', 'Manager'),
 (2, 'Lukas', '098F6BCD4621D373CADE4E832627B4F6', 'Mitarbeiter');
 
 --
@@ -324,17 +338,17 @@ MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=12;
 -- AUTO_INCREMENT für Tabelle `flughäfen`
 --
 ALTER TABLE `flughäfen`
-MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=19;
+MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=11;
 --
 -- AUTO_INCREMENT für Tabelle `fluglinien`
 --
 ALTER TABLE `fluglinien`
-MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=14;
+MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=13;
 --
 -- AUTO_INCREMENT für Tabelle `flugzeuge`
 --
 ALTER TABLE `flugzeuge`
-MODIFY `id` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=10;
+MODIFY `id` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=7;
 --
 -- AUTO_INCREMENT für Tabelle `relationen`
 --
