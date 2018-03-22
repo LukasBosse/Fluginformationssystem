@@ -1,16 +1,10 @@
-<%@ page import="java.sql.ResultSet" %>
-<%@ page import="java.util.HashMap" %>
-<%@ page import="java.util.Map" %>
 <%@ page import="java.util.Date" %>
+<%@ page import="java.util.List" %>
 <%@ page import="java.text.SimpleDateFormat" %>
 <%@ page import="java.text.DateFormat" %>
-<%@ page import="java.util.Iterator" %>
 <%@ page import="javax.servlet.http.HttpServletRequest" %>
-<%@ page import="com.fis.de.DatabaseConnection" %>
-<%@ page import="com.fis.de.HTMLWriter" %>
 <%@ page import="com.fis.de.Redirection" %>
 <%@ page import="com.fis.model.User" %>
-<%@ page import="com.fis.de.Verification" %>
 <%@ page import="com.fis.services.*" %>
 <%@ page import="com.fis.model.*" %>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
@@ -62,17 +56,13 @@
 
 <% 
 
-	DatabaseConnection dbC = new DatabaseConnection();
-	ResultSet rs;
-
 	new Redirection().checkDirection(session, response, "Manager");
-	FlugzeugDao flugzeugDao = new FlugzeugDao();
-	FlughafenDao flughafenDao = new FlughafenDao();
-	GebuchteFlügeDao flügeDao = new GebuchteFlügeDao();
-	HTMLWriter htmlWriter = new HTMLWriter(response.getWriter());	
+	FlugDao flugDao = new FlugDao(response.getWriter());
+	FlugzeugDao flugzeugDao = new FlugzeugDao(response.getWriter());
+	FlughafenDao flughafenDao = new FlughafenDao(response.getWriter());
+	GebuchteFlügeDao flügeDao = new GebuchteFlügeDao(response.getWriter());
 
 	if(request.getParameter("submitFlugAdd") != null) {		
-		FlugDao flugDao = new FlugDao();
 		Flug flug = flugDao.generateFlug(
 		request.getParameter("flugNr"),
 		request.getParameter("flugzeug"),
@@ -82,7 +72,6 @@
 		request.getParameter("startZeit"),
 		request.getParameter("zielOrt"));					
 		flugDao.create(flug);
-		htmlWriter.writeAlert("Erfolg!", "Ihr Flug wurde erfolgreich hinzugefügt.", "alert-success", "right");	
 	}
 		
 %>
@@ -129,9 +118,8 @@
 			          				  <select id="startOrt" name="startOrt" class="validate" required>
 			          				  	<option disabled selected value>Bitte wählen Sie einen Startflughafen aus</option>
 			          				  	 <%
-			          						HashMap<Integer, String> flughäfen = new HashMap<Integer, String>();
-			          				  	 	for(Flughäfen f : flughafenDao.listAllFlughäfen()) {
-			          				  	 		flughäfen.put(f.getId(), f.getBezeichnung());
+			          				  	 	List<Flughäfen> flughäfenList = flughafenDao.listAllFlughäfen();
+			          						for(Flughäfen f : flughäfenList) {
 		          								out.println("<option value='" + f.getId() + "'>" + f.getBezeichnung() + "</option>");
 			          				  	 	}
 			          				  	 %>
@@ -142,12 +130,9 @@
 							          <select id="zielOrt" name="zielOrt" class="validate" required>
 							          	 <option disabled selected value>Bitte wählen Sie einen Zielflughafen aus</option>
 							          	 <%
-							          	 	Iterator iT = flughäfen.entrySet().iterator();
-							        		while(iT.hasNext()) {
-							        			Map.Entry pair = (Map.Entry)iT.next();
-		          								out.println("<option value='" + pair.getKey() + "'>" + pair.getValue() + "</option>");
-		          								iT.remove();
-							        		}
+							          	 	for(Flughäfen f : flughäfenList) {
+		          								out.println("<option value='" + f.getId() + "'>" + f.getBezeichnung() + "</option>");
+							          	 	}
 							          	 %>
 							          </select>
 	    							  <label for="zielOrt">Zielort</label>

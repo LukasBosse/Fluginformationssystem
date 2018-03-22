@@ -1,12 +1,10 @@
-<%@ page import="java.util.HashMap" %>
-<%@ page import="java.sql.ResultSet" %>
-<%@ page import="java.util.Map" %>
-<%@ page import="java.util.Iterator" %>
+<%@ page import="java.util.List" %>
 <%@ page import="javax.servlet.http.HttpServletRequest" %>
-<%@ page import="com.fis.de.DatabaseConnection" %>
-<%@ page import="com.fis.de.HTMLWriter" %>
 <%@ page import="com.fis.de.Redirection" %>
+<%@ page import="com.fis.services.FlughafenDao" %>
+<%@ page import="com.fis.services.RelationenDao" %>
 <%@ page import="com.fis.model.User" %>
+<%@ page import="com.fis.model.Flughäfen" %>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
@@ -38,37 +36,11 @@
 
 	<% 
 		new Redirection().checkDirection(session, response, "Manager");
-		DatabaseConnection dbC = new DatabaseConnection();
-		HTMLWriter htmlWriter = new HTMLWriter(response.getWriter());
-		ResultSet rs;
+		FlughafenDao flughafenDao = new FlughafenDao(response.getWriter());
+		RelationenDao relationenDao = new RelationenDao(response.getWriter());
 		
-		if(request != null) {
-			if(request.getParameter("submitFlughafenAdd") != null && request.getParameter("flughafenBezeichnung") != null) {
-				dbC.connect();
-				if(dbC.execute("INSERT INTO flughäfen (Bezeichnung) VALUES (?)", new String[] {request.getParameter("flughafenBezeichnung")})) {
-					htmlWriter.writeAlert("Erfolg!", "Der Flughafen wurden erfolgreich hinzugefügt.", "alert-success", "left");
-				} else {
-					htmlWriter.writeAlert("Warnung!", "Der Flughafen konnte nicht hinzugefügt werden. Bitte prüfen Sie Ihre Eingaben!", "alert-danger", "left");
-				}
-				dbC.disconnect();
-			}
-			if(request.getParameter("submitRelationAdd") != null) {
-				if(request.getParameter("startOrt") != null && request.getParameter("landeOrt") != null) {
-					if(request.getParameter("startOrt").equals(request.getParameter("landeOrt"))) {
-						htmlWriter.writeAlert("Warnung!", "Ein Flughafen kann nicht gleichzeitig Start- und Zielort sein.", "alert-danger", "left");
-					} else {
-						dbC.connect();
-						if(dbC.execute("INSERT INTO relationen (Startort, Zielort) VALUES (?,?)", new String[] {request.getParameter("startOrt"),request.getParameter("landeOrt")})) {
-							htmlWriter.writeAlert("Erfolg!", "Die Relation wurden erfolgreich hinzugefügt.", "alert-success", "left");
-						} else {
-							htmlWriter.writeAlert("Warnung!", "Die Relation konnte nicht hinzugefügt werden. Bitte prüfen Sie Ihre Eingaben!", "alert-danger", "left");
-						}
-						dbC.disconnect();
-					}
-				}
-			}
-		}
-		
+		if(request.getParameter("submitFlughafenAdd") != null) flughafenDao.createFlughafen(request.getParameter("flughafenBezeichnung"));
+		if(request.getParameter("submitRelationAdd") != null) { relationenDao.createRelation(Integer.parseInt(request.getParameter("startOrt")), Integer.parseInt(request.getParameter("landeOrt"))); }		
 		
 	%>
 
@@ -110,16 +82,10 @@
 				        	<select id="startOrt" name="startOrt">
 				        		<option disabled selected value>Bitte wählen Sie einen Startflughafen aus</option>
 				        		<%
-				        			dbC.connect();
-				        			rs = dbC.executeQuery("SELECT * FROM flughäfen", null);
-				        			HashMap<Integer, String> flughäfen = new HashMap<Integer, String>();
-				        			while(rs.next()) {
-				        				int flughafenID = rs.getInt("ID");
-	      								String bezeichnung = rs.getString("Bezeichnung");
-	      								flughäfen.put(flughafenID,bezeichnung);
-	      								out.println("<option value='" + flughafenID + "'>" + bezeichnung + "</option>");
+				        			List<Flughäfen> flughäfenList = flughafenDao.listAllFlughäfen();
+				        			for(Flughäfen f : flughäfenList) {
+	      								out.println("<option value='" + f.getId() + "'>" + f.getBezeichnung() + "</option>");
 				        			}
-				        			dbC.disconnect();
 				        		%>
 				        	</select>
 				        	<label for="startOrt">Startort</label>
@@ -128,11 +94,8 @@
 				        	<select id="landeOrt" name="landeOrt">
 				        		<option disabled selected value>Bitte wählen Sie einen Zielflughafen aus</option>
 				        		<%
-				        			Iterator iT = flughäfen.entrySet().iterator();
-				        			while(iT.hasNext()) {
-				        				Map.Entry pair = (Map.Entry)iT.next();
-	      								out.println("<option value='" + pair.getKey() + "'>" + pair.getValue() + "</option>");
-	      								iT.remove();
+				        			for(Flughäfen f : flughäfenList) {
+	      								out.println("<option value='" + f.getId() + "'>" + f.getBezeichnung() + "</option>");
 				        			}
 				        		%>
 				        	</select>
@@ -163,19 +126,16 @@
 				          </tr>
 				        </thead>
 				        <tbody>
-	  				<%
-	  					dbC.connect();
-					    rs = dbC.executeQuery("SELECT relationen.ID, starthafen.Bezeichnung As `Starthafen`, landehafen.Bezeichnung As `Landehafen` FROM relationen INNER JOIN flughäfen As `starthafen` ON relationen.Startort = starthafen.ID INNER JOIN flughäfen As `landehafen` ON relationen.Zielort = landehafen.ID", null);
-					    int i = 1;
-				        while(rs.next()) {
+	  				<%	
+						int i = 1;
+	  					for(Object[] obj : relationenDao.listRelationen()) {
 					    	out.println("<tr>");
 					    	out.println("<td>" + i + "</td>");
-					    	out.println("<td>" + rs.getString("Starthafen") +  "</td>");
-					    	out.println("<td>" + rs.getString("Landehafen") +  "</td>");
+					    	out.println("<td>" + obj[0] +  "</td>");
+					    	out.println("<td>" + obj[1] +  "</td>");
 					    	out.println("</tr>");
 					    	i++;
-					    }
-					    dbC.disconnect();
+	  					}
 	  				%>
 	  				  </tbody>
 			      </table>

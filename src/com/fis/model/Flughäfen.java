@@ -20,6 +20,10 @@ public class Flughäfen implements Serializable {
 
 	public Flughäfen() {
 	}
+	
+	public Flughäfen(String bezeichnung) {
+		this.bezeichnung = bezeichnung;
+	}
 
 	public int getId() {
 		return this.id;

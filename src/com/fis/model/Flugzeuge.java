@@ -26,7 +26,13 @@ public class Flugzeuge implements Serializable {
 
 	private String type;
 
-	public Flugzeuge() {
+	public Flugzeuge() {}
+	
+	public Flugzeuge(String hersteller, String type, int sitze, int fluggesellschaft) {
+		this.hersteller = hersteller;
+		this.type = type;
+		this.sitze = sitze;
+		this.fluggesellschaft = fluggesellschaft;
 	}
 
 	public int getId() {

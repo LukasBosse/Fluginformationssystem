@@ -1,17 +1,19 @@
 package com.fis.services;
 
+import java.io.Writer;
 import java.math.BigDecimal;
 import java.sql.Time;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 
 import com.fis.model.Flug;
 
 public class FlugDao extends AbstractDao {
 
-	public FlugDao() { super(); }
+	public FlugDao(Writer oS) { super(oS); }
 	
 	public Flug findFlugByFlugNr(String flugNr) {
 		query = entityManager.createQuery("Select f from Flug f where f.flugnr = :flugNr");
@@ -23,6 +25,7 @@ public class FlugDao extends AbstractDao {
 		entityManager.getTransaction().begin();
 		entityManager.persist(f);
 		entityManager.getTransaction().commit();	
+		htmlWriter.writeAlert("Erfolg!", "Ihr Flug wurde erfolgreich hinzugefügt.", "alert-success", "right");	
 	}
 	
 	public Flug generateFlug(String flugnr, String flugzeug, String km, String landezeit, String start, String startzeit,String ziel) {
@@ -36,6 +39,12 @@ public class FlugDao extends AbstractDao {
 		flug.setLandezeit(timeFormatter(landezeit));
 		flug.setFlugzeit(BigDecimal.valueOf(getFlugzeit(flug.getStartzeit(), flug.getLandezeit())));
 		return flug;
+	}
+
+	@SuppressWarnings("unchecked")
+	public List<Object[]> listAllFluglinien() {
+		List<Object[]> obj = entityManager.createNativeQuery("SELECT f.flugnr, flS.Bezeichnung As `Start`, flD.Bezeichnung As `Ziel` FROM `flug` As `f` INNER JOIN flughäfen AS `flS` ON flS.ID = f.start INNER JOIN flughäfen As `flD` ON flD.ID = f.ziel").getResultList();
+		return obj;
 	}
 
 	

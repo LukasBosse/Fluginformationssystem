@@ -1,8 +1,11 @@
 package com.fis.de;
 
 import java.io.IOException;
+import java.io.Writer;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+
+import javax.annotation.ManagedBean;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -11,21 +14,18 @@ import javax.xml.bind.DatatypeConverter;
 import com.fis.model.User;
 import com.fis.services.UserDao;
 
+@ManagedBean
 public class Verification {
 	
-	private HTMLWriter htmlWriter;	
-	private UserDao userDao = new UserDao();
+	private UserDao userDao;
 	
-	public Verification(HTMLWriter htmlWriter) { this.htmlWriter = htmlWriter; }
+	public Verification(Writer writer) { 
+		userDao = new UserDao(writer);
+	}
 	
 	public void register(String username, String userType, String password) {
 		User user = new User(username, toMD5(password), userType);
 		userDao.create(user);
-		if(user.getId() != 0) {
-			htmlWriter.writeAlert("Erfolg!", "Sie wurden erfolgreich registriert.", "alert-success", "left");
-		} else {
-			htmlWriter.writeAlert("Warnung!", "Sie konnten leider nicht registriert werden. Bitte prüfen Sie Ihre Eingaben!", "alert-danger", "left");			
-		}
 	}
 	
 	public void login(String username, String password, HttpSession session, HttpServletRequest request, HttpServletResponse response) {
@@ -38,7 +38,7 @@ public class Verification {
 				e.printStackTrace();
 			}
 		}
-		htmlWriter.writeAlert("Warnung!", "Ihre Anmeldung ist leider fehlgeschlagen. Bitte prüfen Sie Ihre Eingaben!", "alert-danger", "left");
+		userDao.getWriter().writeAlert("Warnung!", "Ihre Anmeldung ist leider fehlgeschlagen. Bitte prüfen Sie Ihre Eingaben!", "alert-danger", "left");
 	}
 
 	public static String toMD5(String pass) {
