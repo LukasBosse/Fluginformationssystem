@@ -27,6 +27,28 @@
 	 <script type="text/javascript" src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
 	 <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/js/materialize.min.js"></script>
 
+		<script>
+		 $(document).ready(function() {
+			   $('select').material_select();
+			   $('.timepicker').pickatime({
+			    default: 'now', 
+			    fromnow: 0,      
+			    twelvehour: false,
+			    donetext: 'OK',
+		        format: "HH:ii:SS",
+		        cleartext: 'Clear',
+			    canceltext: 'Cancel',
+			    autoclose: false,
+			    ampmclickable: true,
+			    aftershow: function(){}
+			  });
+		 });
+	    $('.timepicker').on('change', function() {
+	        let receivedVal = $(this).val();
+	        $(this).val(receivedVal + ":00");
+	    });
+	 </script>
+	 
 	 <title>Fluginformationssystem (FIS) - Mitarbeiteransicht</title>
 	 
  </head>
@@ -90,6 +112,13 @@
   	<div class="col s6">
   		<div class="card">
   			<div class="card-content">
+  				<div class="input-field col s6">
+			     <input id="startZeit" name="startZeit" class="timepicker validate" required/>
+			      <label for="startZeit">Aktuelle Zeit</label>          			
+			     </div>
+  				<div class="input-field col s12">
+		  			<button class="btn waves-effect waves-light" type="submit" name="submitNewCurrentTime">Aktuelle Zeit setzen</button>
+		  		</div>
   				 <table class="highlight centered">
 		        	<thead>
 			          <tr>
