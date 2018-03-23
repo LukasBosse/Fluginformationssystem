@@ -1,13 +1,12 @@
-<%@ page import="java.sql.ResultSet" %>
-<%@ page import="java.util.HashMap" %>
-<%@ page import="java.util.Map" %>
-<%@ page import="java.util.Iterator" %>
+<%@ page import="java.util.Date" %>
+<%@ page import="java.util.List" %>
+<%@ page import="java.text.SimpleDateFormat" %>
+<%@ page import="java.text.DateFormat" %>
 <%@ page import="javax.servlet.http.HttpServletRequest" %>
-<%@ page import="com.fis.de.DatabaseConnection" %>
-<%@ page import="com.fis.de.HTMLWriter" %>
 <%@ page import="com.fis.de.Redirection" %>
-<%@ page import="com.fis.de.User" %>
-<%@ page import="com.fis.de.Verification" %>
+<%@ page import="com.fis.model.User" %>
+<%@ page import="com.fis.services.*" %>
+<%@ page import="com.fis.model.*" %>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
@@ -30,7 +29,23 @@
 	 <script>
 		 $(document).ready(function() {
 			   $('select').material_select();
+			   $('.timepicker').pickatime({
+			    default: 'now', 
+			    fromnow: 0,      
+			    twelvehour: false,
+			    donetext: 'OK',
+		        format: "HH:ii:SS",
+		        cleartext: 'Clear',
+			    canceltext: 'Cancel',
+			    autoclose: false,
+			    ampmclickable: true,
+			    aftershow: function(){}
+			  });
 		 });
+	    $('.timepicker').on('change', function() {
+	        let receivedVal = $(this).val();
+	        $(this).val(receivedVal + ":00");
+	    });
 	 </script>
 
 	 <title>Fluginformationssystem (FIS) - Manageransicht</title>
@@ -41,40 +56,22 @@
 
 <% 
 
-	DatabaseConnection dbC = new DatabaseConnection();
-	ResultSet rs;
-
 	new Redirection().checkDirection(session, response, "Manager");
-	HTMLWriter htmlWriter = new HTMLWriter(response.getWriter());	
+	FlugDao flugDao = new FlugDao(response.getWriter());
+	FlugzeugDao flugzeugDao = new FlugzeugDao(response.getWriter());
+	FlughafenDao flughafenDao = new FlughafenDao(response.getWriter());
+	GebuchteFlügeDao flügeDao = new GebuchteFlügeDao(response.getWriter());
 
-	if(request != null) {
-		if(request.getParameter("submitFlugAdd") != null) {
-			if(request.getParameter("flugNr") != null && request.getParameter("flugzeug") != null) {
-				if(request.getParameter("startOrt") != null) {
-					if(request.getParameter("zielOrt") != null) {
-						if(request.getParameter("flugZeit") != null) {
-							if(request.getParameter("flugDistanz") != null) {			
-								dbC.connect();
-								String[] param = new String[] {
-										request.getParameter("flugNr").toString(),
-										request.getParameter("flugzeug").toString(),
-										request.getParameter("startOrt").toString(),
-										request.getParameter("zielOrt").toString(),
-										request.getParameter("flugZeit").toString(),									
-										request.getParameter("flugDistanz").toString()
-								};
-								if(dbC.execute("INSERT INTO flug (flugnr, flugzeug, start, ziel, flugzeit, km) VALUES (?,?,?,?,?,?)", param)) {
-									htmlWriter.writeAlert("Erfolg!", "Ihr Flug wurde erfolgreich hinzugefügt.", "alert-success", "right");
-								} else {
-									htmlWriter.writeAlert("Warnung!", "Ihr Flug wurde leider <u>nicht</u> erfolgreich hinzugefügt. Bitte überprüfen Sie Ihre Eingaben!", "alert-danger", "right");
-								}
-								dbC.disconnect();
-							}	
-						}	
-					}	
-				}
-			}
-		}
+	if(request.getParameter("submitFlugAdd") != null) {		
+		Flug flug = flugDao.generateFlug(
+		request.getParameter("flugNr"),
+		request.getParameter("flugzeug"),
+		request.getParameter("flugDistanz"),
+		request.getParameter("landeZeit"),
+		request.getParameter("startOrt"),
+		request.getParameter("startZeit"),
+		request.getParameter("zielOrt"));					
+		flugDao.create(flug);
 	}
 		
 %>
@@ -105,15 +102,12 @@
 			          			</div>
 			          			<div class="row">
 			          				<div class="input-field col s12">
-			          					<select id="flugzeuge" name="flugzeug" required>
+			          					<select id="flugzeuge" name="flugzeug" class="validate" required>
 			          					    <option disabled selected value> -- Bitte wählen Sie ein Flugzeug aus -- </option>
 			          						<%
-			          							dbC.connect();
-							        		  	rs = dbC.executeQuery("SELECT * FROM flugzeuge", null);
-							        		  	while(rs.next()) {
-							        		  		out.println("<option value='" + rs.getInt("ID") +"'>" + rs.getString("hersteller") + " | " + rs.getString("type") + " | (" + rs.getInt("sitze") + ")</option>");    
+							        		  	for(Flugzeuge f : flugzeugDao.listAllFlugzeuge()) {
+							        		  		out.println("<option value='" + f.getId() +"'>" + f.getHersteller() + " | " + f.getType() + " | (" + f.getSitze() + ")</option>");    
 							        		  	}
-							        		  	dbC.disconnect();
 			          						%>
 			          					</select>
 			          					<label for="flugzeuge">Flugzeuge</label>
@@ -124,16 +118,10 @@
 			          				  <select id="startOrt" name="startOrt" class="validate" required>
 			          				  	<option disabled selected value>Bitte wählen Sie einen Startflughafen aus</option>
 			          				  	 <%
-			          				  	 	dbC.connect();
-			          						rs = dbC.executeQuery("SELECT * FROM flughäfen", null);
-			          						HashMap<Integer, String> flughäfen = new HashMap<Integer, String>();
-		          							while(rs.next()) {
-		          								int flughafenID = rs.getInt("ID");
-		          								String bezeichnung = rs.getString("Bezeichnung");
-		          								flughäfen.put(flughafenID,bezeichnung);
-		          								out.println("<option value='" + flughafenID + "'>" + bezeichnung + "</option>");
-		          							}
-			          						dbC.disconnect();
+			          				  	 	List<Flughäfen> flughäfenList = flughafenDao.listAllFlughäfen();
+			          						for(Flughäfen f : flughäfenList) {
+		          								out.println("<option value='" + f.getId() + "'>" + f.getBezeichnung() + "</option>");
+			          				  	 	}
 			          				  	 %>
 			          				  </select>
 							          <label for="startOrt">Startort</label>
@@ -142,22 +130,23 @@
 							          <select id="zielOrt" name="zielOrt" class="validate" required>
 							          	 <option disabled selected value>Bitte wählen Sie einen Zielflughafen aus</option>
 							          	 <%
-							          	 	Iterator iT = flughäfen.entrySet().iterator();
-							        		while(iT.hasNext()) {
-							        			Map.Entry pair = (Map.Entry)iT.next();
-		          								out.println("<option value='" + pair.getKey() + "'>" + pair.getValue() + "</option>");
-		          								iT.remove();
-							        		}
+							          	 	for(Flughäfen f : flughäfenList) {
+		          								out.println("<option value='" + f.getId() + "'>" + f.getBezeichnung() + "</option>");
+							          	 	}
 							          	 %>
 							          </select>
 	    							  <label for="zielOrt">Zielort</label>
 							        </div>
 			          			</div>
 			          			<div class="row">
-			          				<div class="input-field col s12">		          			
-	    						      <input id="flugZeit" type="text" name="flugZeit" class="validate" required>
-							          <label for="flugZeit">Flugdauer <small><i>(in Stunden)</i></small></label>
-							        </div>
+			          				<div class="input-field col s6">
+			          					<input id="startZeit" name="startZeit" class="timepicker validate" required>
+			          					<label for="startZeit">Startzeit</label>          			
+			          				</div>
+			          				<div class="input-field col s6">
+			          					<input id="landeZeit" name="landeZeit" class="timepicker validate" required>
+			          					<label for="landeZeit">Landezeit</label>          			
+			          				</div>
 			          			</div>
 			          			<div class="row">
 			          				<div class="input-field col s12">
@@ -192,22 +181,17 @@
 		        </thead>		
 		        <tbody>
 		          <%
-		          
-		          	dbC.connect();
-					rs = dbC.executeQuery("SELECT fZ.fluglinie, fZ.hersteller, fZ.type, fH.Bezeichnung As `Startort`, fHZ.Bezeichnung As `Zielort`, f.flugzeit, f.km , COUNT(b.flugnr) As `Auslastung`, fZ.sitze As `Kapazität` FROM `flugzeuge` As `fZ` INNER JOIN flug As `f` ON fZ.fluglinie = f.flugnr INNER JOIN flughäfen As `fH` ON fH.ID = f.start INNER JOIN flughäfen As `fHZ` ON fHZ.ID = f.ziel INNER JOIN buchung As `b` ON b.flugnr = fZ.fluglinie GROUP BY fZ.fluglinie ", null);	
-					while(rs.next()) {
-						out.println("<tr>");
-						out.println("<td>" + rs.getString("fz.fluglinie") + "</td>");
-						out.println("<td>" + rs.getString("fZ.hersteller") + " - " + rs.getString("fZ.type") + "</td>");
-						out.println("<td>" + rs.getString("Startort") + "</td>");
-						out.println("<td>" + rs.getString("Zielort") + "</td>");
-						out.println("<td>" + rs.getInt("Auslastung") + " / " + rs.getInt("Kapazität") + "</td>");
-						out.println("<td>" + rs.getString("f.flugzeit") + "h</td>");
-						out.println("<td>" + rs.getString("f.km") + "km</td>");
+		          	for(GebuchteFlüge gF : flügeDao.listAllFlughäfen()) {
+		          		out.println("<tr>");
+						out.println("<td>" + gF.getFlugLinie() + "</td>");
+						out.println("<td>" + gF.getHersteller() + " - " + gF.getType() + "</td>");
+						out.println("<td>" + gF.getStartOrt() + "</td>");
+						out.println("<td>" + gF.getZielOrt() + "</td>");
+						out.println("<td>" + gF.getAuslastung() + " / " + gF.getKapazität() + "</td>");
+						out.println("<td>" + gF.getFlugZeit() + "h</td>");
+						out.println("<td>" + gF.getDistanz() + "km</td>");
 						out.println("</tr>");
-					}
-					dbC.disconnect(); 
-		   
+		          	}
 		          %>
 		        </tbody>
 		      </table>

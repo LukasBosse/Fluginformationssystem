@@ -1,12 +1,8 @@
-<%@ page import="java.util.HashMap" %>
-<%@ page import="java.sql.ResultSet" %>
-<%@ page import="java.util.Map" %>
-<%@ page import="java.util.Iterator" %>
+<%@ page import="java.util.List" %>
 <%@ page import="javax.servlet.http.HttpServletRequest" %>
-<%@ page import="com.fis.de.DatabaseConnection" %>
-<%@ page import="com.fis.de.HTMLWriter" %>
 <%@ page import="com.fis.de.Redirection" %>
-<%@ page import="com.fis.de.User" %>
+<%@ page import="com.fis.model.*" %>
+<%@ page import="com.fis.services.*" %>
 <%@ page import="com.fis.de.Verification" %>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
@@ -38,31 +34,15 @@
 	 <%
 	
 	 	new Redirection().checkDirection(session, response, "Manager");
-	 	HTMLWriter htmlWriter = new HTMLWriter(response.getWriter());
-	 	DatabaseConnection dbC = new DatabaseConnection();
-	 	ResultSet rs;
+	 	FlugzeugDao flugzeugDao = new FlugzeugDao(response.getWriter());
+	 	FluglinienDao fluglinienDao = new FluglinienDao(response.getWriter());
+	 	FlugDao flugDao = new FlugDao(response.getWriter());
 	 	
 	  	if(request.getParameter("submitFlugzeugAdd") != null) {
-	  		if(request.getParameter("hersteller") != null && request.getParameter("muster") != null && request.getParameter("sitze") != null && request.getParameter("fluggesellschaft") != null) {
-	  			dbC.connect();
-	  			if(dbC.execute("INSERT INTO flugzeuge (hersteller, type, sitze, fluggesellschaft) VALUES (?,?,?,?)", new String[] {request.getParameter("hersteller"),request.getParameter("muster"),request.getParameter("sitze"),request.getParameter("fluggesellschaft")})) {
-	  				htmlWriter.writeAlert("Erfolg!", "Das Flugzeug wurde erfolgreich hinzugefügt.", "alert-success", "left");
-				} else {
-					htmlWriter.writeAlert("Warnung!", "Das Flugzeug konnte nicht hinzugefügt werden. Bitte prüfen Sie Ihre Eingaben!", "alert-danger", "left");
-				}
-	  			dbC.disconnect();
-	  		}
+	  		flugzeugDao.create(new Flugzeuge(request.getParameter("hersteller"),request.getParameter("muster"),Integer.parseInt(request.getParameter("sitze")),Integer.parseInt(request.getParameter("fluggesellschaft"))));
 	  	}
 	  	if(request.getParameter("submitRelationAdd") != null) {
-	  		if(request.getParameter("flug") != null && request.getParameter("flugzeug") != null) {
-	  			dbC.connect();
-	  			if(dbC.execute("UPDATE flugzeuge SET fluglinie = ? WHERE id = ?", new String[] {request.getParameter("flug"),request.getParameter("flugzeug")})) {
-	  				htmlWriter.writeAlert("Erfolg!", "Das Flugzeug wurde erfolgreich zugewiesen.", "alert-success", "left");
-				} else {
-					htmlWriter.writeAlert("Warnung!", "Das Flugzeug konnte nicht zugewiesen werden. Bitte prüfen Sie Ihre Eingaben!", "alert-danger", "left");
-				}
-	  			dbC.disconnect();
-	  		}
+	  		flugzeugDao.updateFluglinie(Integer.parseInt(request.getParameter("flugzeug")), request.getParameter("flug"));
 	  	}
 	 	
 	 %>
@@ -106,12 +86,9 @@
 	  						<select id="fluggesellschaft" name="fluggesellschaft" class="validate" required>
 	  							<option disabled selected value> -- Bitte wählen Sie ein Fluggesellschaft aus -- </option>	  						
 	  							<%
-	  								dbC.connect();
-	  								rs = dbC.executeQuery("SELECT * FROM fluglinien", null);
-	  								while(rs.next()) {
-	  									out.println("<option value='" + rs.getString("ID") + "'>" + rs.getString("Bezeichnung") + " - " + rs.getString("Gesellschaft") + "</option>");
-	  								}
- 	  								dbC.disconnect();
+	  							for(Fluglinien f : fluglinienDao.listAllFlugzeuge()) {
+	  								out.println("<option value='" + f.getId() + "'>" + f.getBezeichnung() + " - " + f.getGesellschaft() + "</option>");
+	  							}
 	  							%>
 	  						</select>
 	  						<label for="fluggesellschaft"></label>
@@ -142,31 +119,23 @@
 						        </thead>
 						        <tbody>
 	  				<%
-	  					dbC.connect();
-	  					rs = dbC.executeQuery(" SELECT f.id, f.hersteller, f.type, f.sitze, f.fluglinie, g.Gesellschaft FROM flugzeuge As `f` INNER JOIN fluglinien As `g` ON g.ID = f.fluggesellschaft", null);
-	  					HashMap<Integer, String> flugzeugMap = new HashMap<Integer, String>();
-	  					int i = 1;
-	  					while(rs.next()) {
-	  						int flugzeugId = rs.getInt("f.id");
-	  						String flugzeugHersteller = rs.getString("f.hersteller");
-	  						String flugzeugMuster = rs.getString("f.type");
+	  					List<Object[]> objs = flugzeugDao.findFlugzeugWithDetails();
+	  					for(int i = 0; i < objs.size(); i++) {
+	  						Object[] obj = objs.get(i);
 	  						out.println("<tr>");
-		  						out.println("<td>" + i + "</td>");
-		  						out.println("<td>" + flugzeugHersteller + "</td>");
-		  						out.println("<td>" + flugzeugMuster + "</td>");
-		  						out.println("<td>" + rs.getInt("f.sitze") + "</td>");
-		  						if(rs.getString("f.fluglinie") != null) {
-		  							out.println("<td>" + rs.getString("f.fluglinie") + "</td>");
-		  						} else {
-		  							out.println("<td> - </td>");
-		  						}
-		  						out.println("<td>" + rs.getString("g.Gesellschaft") + "</td>");
-	  						out.println("</tr>");
-	  						flugzeugMap.put(flugzeugId, flugzeugHersteller + " - " + flugzeugMuster);
-	  						i++;
+	  						out.println("<td>" + (i+1) + "</td>");
+	  						out.println("<td>" + obj[1] + "</td>");
+	  						out.println("<td>" + obj[2] + "</td>");
+	  						out.println("<td>" + obj[3] + "</td>");
+	  						if(obj[4] != null) {
+	  							out.println("<td>" + obj[4] + "</td>");
+	  						} else {
+	  							out.println("<td> - </td>");
+	  						}
+	  						out.println("<td>" + obj[5] + "</td>");
+  							out.println("</tr>");
 	  					}
-	  					dbC.disconnect();
-	  				%>
+		  			%>
 	  					</tbody>
 					</table>
 	  			</div>
@@ -185,12 +154,9 @@
 	  						<select name="flugzeug" id="flugzeug">
 	  							<option disabled selected value> -- Bitte wählen Sie ein Flugzeug aus -- </option>	  						
 		  						<%
-		  						 Iterator iT = flugzeugMap.entrySet().iterator();
-		  						 while(iT.hasNext()) {
-		  							 Map.Entry pair = (Map.Entry)iT.next();
-		  							 out.println("<option value='" + pair.getKey() + "'>" + pair.getValue() + "</option>");
-		  							 iT.remove();
-		  						 }
+		  						for(Object[] obj : objs) {
+		  							 out.println("<option value='" + obj[0] + "'>" + obj[1] + " - " + obj[2] + "</option>");
+		  						}
 		  						%>
 	  						</select>
 	  						<label for="flugzeug">Flugzeug</label>
@@ -199,13 +165,10 @@
 	  						<select name="flug" id="flug">
 	  							<option disabled selected value> -- Bitte wählen Sie einen Flug aus -- </option>
 	  							<%
-	  							dbC.connect();
-	  							rs = dbC.executeQuery("SELECT f.flugnr, flS.Bezeichnung As `Start`, flD.Bezeichnung As `Ziel` FROM `flug` As `f` INNER JOIN flughäfen AS `flS` ON flS.ID = f.start INNER JOIN flughäfen As `flD` ON flD.ID = f.ziel;", null);
-	  							while(rs.next()) {
-	  								String flugNr = rs.getString("flugnr");
-	  								out.println("<option value='" + flugNr  + "'>" + flugNr + " (" + rs.getString("Start") + " &#8594; " + rs.getString("Ziel") + ")</option>");
+	  							List<Object[]> fluglinienObj = flugDao.listAllFluglinien();
+	  							for(Object[] obj : fluglinienObj) {
+	  								out.println("<option value='" + obj[0]  + "'>" + obj[0] + " (" + obj[1] + " &#8594; " + obj[2] + ")</option>");
 	  							}
-	  							dbC.disconnect();
 	  							%>	  						
 	  						</select>
 	  						<label for="flug">Flug</label>

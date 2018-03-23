@@ -1,8 +1,4 @@
-<%@ page language="java" contentType="text/html; charset=ISO-8859-1"
-	pageEncoding="ISO-8859-1"%>
-<%@ page import="java.sql.ResultSet"%>
-<%@ page import="com.fis.de.DatabaseConnection"%>
-<%@ page import="com.fis.de.Directory"%>
+<%@ page language="java" contentType="text/html; charset=ISO-8859-1" pageEncoding="ISO-8859-1"%>
 <%@ page import="com.fis.de.HTMLWriter"%>
 <%@ page import="com.fis.de.Verification"%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
@@ -38,11 +34,8 @@
 
 	<% 
 	if(request.getParameter("register") != null) {
-		System.err.println("Failed!");
-		if(request.getParameter("username") != null && request.getParameter("passwort") != null && request.getParameter("userType") != null) {
-			Verification verification = new Verification(new HTMLWriter(response.getWriter()));
-			verification.register(request.getParameter("username").toString(), request.getParameter("userType").toString(), request.getParameter("passwort").toString());
-		}
+		Verification verification = new Verification(new HTMLWriter(response.getWriter()));
+		verification.register(request.getParameter("username"), request.getParameter("userType"), request.getParameter("passwort"));
 	}
 %>
 

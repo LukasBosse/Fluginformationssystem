@@ -1,10 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1"
 	pageEncoding="ISO-8859-1"%>
-<%@ page import="java.sql.ResultSet"%>
-<%@ page import="com.fis.de.DatabaseConnection"%>
-<%@ page import="com.fis.de.Directory"%>
 <%@ page import="com.fis.de.HTMLWriter"%>
-<%@ page import="com.fis.de.User"%>
+<%@ page import="com.fis.model.User" %>
 <%@ page import="com.fis.de.Verification"%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
@@ -30,7 +27,7 @@
 		if(request != null) {
 			if(session.getAttribute("user") != null) {
 				User user = (User) session.getAttribute("user");
-				response.sendRedirect(user.getUserType() + ".jsp");
+				response.sendRedirect(user.getType() + ".jsp");
 			}
 			if(request.getParameter("login") != null && request.getParameter("username") != null && request.getParameter("passwort") != null) {
 				Verification verification = new Verification(new HTMLWriter(response.getWriter()));
