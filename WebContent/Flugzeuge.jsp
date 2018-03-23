@@ -1,9 +1,12 @@
 <%@ page import="java.util.List" %>
 <%@ page import="javax.servlet.http.HttpServletRequest" %>
 <%@ page import="com.fis.de.Redirection" %>
+<%@ page import="com.fis.controller.FlugzeugController" %>
+<%@ page import="com.fis.controller.FluggesellschaftenController" %>
+<%@ page import="com.fis.controller.FlugController" %>
 <%@ page import="com.fis.model.*" %>
-<%@ page import="com.fis.services.*" %>
 <%@ page import="com.fis.de.Verification" %>
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
@@ -34,15 +37,15 @@
 	 <%
 	
 	 	new Redirection().checkDirection(session, response, "Manager");
-	 	FlugzeugDao flugzeugDao = new FlugzeugDao(response.getWriter());
-	 	FluglinienDao fluglinienDao = new FluglinienDao(response.getWriter());
-	 	FlugDao flugDao = new FlugDao(response.getWriter());
+	 	FlugzeugController flugzeugController = new FlugzeugController();
+	 	FluggesellschaftenController fluggesellschaftenController = new FluggesellschaftenController();
+	 	FlugController flugController = new FlugController();
 	 	
 	  	if(request.getParameter("submitFlugzeugAdd") != null) {
-	  		flugzeugDao.create(new Flugzeuge(request.getParameter("hersteller"),request.getParameter("muster"),Integer.parseInt(request.getParameter("sitze")),Integer.parseInt(request.getParameter("fluggesellschaft"))));
+	  		flugzeugController.create(response.getWriter(), new Flugzeuge(request.getParameter("hersteller"),request.getParameter("muster"),Integer.parseInt(request.getParameter("sitze")),Integer.parseInt(request.getParameter("fluggesellschaft"))));
 	  	}
 	  	if(request.getParameter("submitRelationAdd") != null) {
-	  		flugzeugDao.updateFluglinie(Integer.parseInt(request.getParameter("flugzeug")), request.getParameter("flug"));
+	  		flugzeugController.updateFluglinie(response.getWriter(), Integer.parseInt(request.getParameter("flugzeug")), request.getParameter("flug"));
 	  	}
 	 	
 	 %>
@@ -86,7 +89,7 @@
 	  						<select id="fluggesellschaft" name="fluggesellschaft" class="validate" required>
 	  							<option disabled selected value> -- Bitte wählen Sie ein Fluggesellschaft aus -- </option>	  						
 	  							<%
-	  							for(Fluglinien f : fluglinienDao.listAllFlugzeuge()) {
+	  							for(Fluggesellschaften f : fluggesellschaftenController.listAllFlugzeuge()) {
 	  								out.println("<option value='" + f.getId() + "'>" + f.getBezeichnung() + " - " + f.getGesellschaft() + "</option>");
 	  							}
 	  							%>
@@ -119,7 +122,7 @@
 						        </thead>
 						        <tbody>
 	  				<%
-	  					List<Object[]> objs = flugzeugDao.findFlugzeugWithDetails();
+	  					List<Object[]> objs = flugzeugController.findFlugzeugWithDetails();
 	  					for(int i = 0; i < objs.size(); i++) {
 	  						Object[] obj = objs.get(i);
 	  						out.println("<tr>");
@@ -165,7 +168,7 @@
 	  						<select name="flug" id="flug">
 	  							<option disabled selected value> -- Bitte wählen Sie einen Flug aus -- </option>
 	  							<%
-	  							List<Object[]> fluglinienObj = flugDao.listAllFluglinien();
+	  							List<Object[]> fluglinienObj = flugController.listAllFluglinien();
 	  							for(Object[] obj : fluglinienObj) {
 	  								out.println("<option value='" + obj[0]  + "'>" + obj[0] + " (" + obj[1] + " &#8594; " + obj[2] + ")</option>");
 	  							}
@@ -173,9 +176,7 @@
 	  						</select>
 	  						<label for="flug">Flug</label>
 	  					</div>
-  					</div>
-  					<div class="row">
-  						<div class="input-field col s12">
+	  					<div class="input-field col s12">
   							<button class="btn waves-effect waves-light" type="submit" name="submitRelationAdd">Flug zuweisen</button>
   						</div>
   					</div>

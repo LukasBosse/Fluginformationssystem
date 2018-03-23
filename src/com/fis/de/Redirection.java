@@ -2,11 +2,13 @@ package com.fis.de;
 
 import java.io.IOException;
 
+import javax.ejb.Stateless;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import com.fis.model.User;
 
+@Stateless
 public class Redirection {
 	
 	public void checkDirection(HttpSession session, HttpServletResponse response, String userType) {

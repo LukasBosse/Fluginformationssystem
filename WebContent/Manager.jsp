@@ -1,12 +1,14 @@
 <%@ page import="java.util.Date" %>
 <%@ page import="java.util.List" %>
-<%@ page import="java.text.SimpleDateFormat" %>
-<%@ page import="java.text.DateFormat" %>
 <%@ page import="javax.servlet.http.HttpServletRequest" %>
 <%@ page import="com.fis.de.Redirection" %>
 <%@ page import="com.fis.model.User" %>
-<%@ page import="com.fis.services.*" %>
 <%@ page import="com.fis.model.*" %>
+<%@ page import="com.fis.controller.FlugzeugController" %>
+<%@ page import="com.fis.controller.FlugController" %>
+<%@ page import="com.fis.controller.GebuchteFlügeController" %>
+<%@ page import="com.fis.controller.FluglinienController" %>
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
@@ -55,23 +57,20 @@
 <body>
 
 <% 
-
 	new Redirection().checkDirection(session, response, "Manager");
-	FlugDao flugDao = new FlugDao(response.getWriter());
-	FlugzeugDao flugzeugDao = new FlugzeugDao(response.getWriter());
-	FlughafenDao flughafenDao = new FlughafenDao(response.getWriter());
-	GebuchteFlügeDao flügeDao = new GebuchteFlügeDao(response.getWriter());
-
+	FlugzeugController flugzeugController = new FlugzeugController();
+	FlugController flugController = new FlugController();
+	FluglinienController fluglinienController = new FluglinienController();
+	GebuchteFlügeController gebuchteFlügeController = new GebuchteFlügeController();
+	
 	if(request.getParameter("submitFlugAdd") != null) {		
-		Flug flug = flugDao.generateFlug(
+		Flug flug = flugController.generateFlug(
+		response.getWriter(),
 		request.getParameter("flugNr"),
 		request.getParameter("flugzeug"),
 		request.getParameter("flugDistanz"),
 		request.getParameter("landeZeit"),
-		request.getParameter("startOrt"),
-		request.getParameter("startZeit"),
-		request.getParameter("zielOrt"));					
-		flugDao.create(flug);
+		request.getParameter("startZeit"));
 	}
 		
 %>
@@ -96,8 +95,15 @@
 			          		<form method="GET" class="col s12" action="<% out.println(request.getRequestURL());%>">
 			          			<div class="row">
 			          				<div class="input-field col s12">
-	    						      <input id="flugNr" type="text" name="flugNr" class="validate" required>
-							          <label for="flugNr">Flugnummer</label>
+							          <select id="flugNr" name="flugNr" class="validate" required>
+							          	<option disabled selected value> -- Bitte wählen Sie ein Fluglinie aus -- </option>
+							            <%
+								          for(Object[] obj : fluglinienController.listRelationen()) {
+						        		  		out.println("<option value='" + obj[0] +"'>" + obj[0] + " ( " + obj[1] + "  &#8594; " + obj[2] + ")</option>");      
+								          }
+							          	%>
+							          </select>
+							          <label for="flugNr">Fluglinie</label>
 							        </div>
 			          			</div>
 			          			<div class="row">
@@ -105,7 +111,7 @@
 			          					<select id="flugzeuge" name="flugzeug" class="validate" required>
 			          					    <option disabled selected value> -- Bitte wählen Sie ein Flugzeug aus -- </option>
 			          						<%
-							        		  	for(Flugzeuge f : flugzeugDao.listAllFlugzeuge()) {
+							        		  	for(Flugzeuge f : flugzeugController.listAllFlugzeuge()) {
 							        		  		out.println("<option value='" + f.getId() +"'>" + f.getHersteller() + " | " + f.getType() + " | (" + f.getSitze() + ")</option>");    
 							        		  	}
 			          						%>
@@ -113,32 +119,7 @@
 			          					<label for="flugzeuge">Flugzeuge</label>
 			          				</div>
 			          			</div>
-			          			<div class="row">
-			          				<div class="input-field col s6">
-			          				  <select id="startOrt" name="startOrt" class="validate" required>
-			          				  	<option disabled selected value>Bitte wählen Sie einen Startflughafen aus</option>
-			          				  	 <%
-			          				  	 	List<Flughäfen> flughäfenList = flughafenDao.listAllFlughäfen();
-			          						for(Flughäfen f : flughäfenList) {
-		          								out.println("<option value='" + f.getId() + "'>" + f.getBezeichnung() + "</option>");
-			          				  	 	}
-			          				  	 %>
-			          				  </select>
-							          <label for="startOrt">Startort</label>
-							        </div>
-							        <div class="input-field col s6">
-							          <select id="zielOrt" name="zielOrt" class="validate" required>
-							          	 <option disabled selected value>Bitte wählen Sie einen Zielflughafen aus</option>
-							          	 <%
-							          	 	for(Flughäfen f : flughäfenList) {
-		          								out.println("<option value='" + f.getId() + "'>" + f.getBezeichnung() + "</option>");
-							          	 	}
-							          	 %>
-							          </select>
-	    							  <label for="zielOrt">Zielort</label>
-							        </div>
-			          			</div>
-			          			<div class="row">
+			            		<div class="row">
 			          				<div class="input-field col s6">
 			          					<input id="startZeit" name="startZeit" class="timepicker validate" required>
 			          					<label for="startZeit">Startzeit</label>          			
@@ -181,7 +162,7 @@
 		        </thead>		
 		        <tbody>
 		          <%
-		          	for(GebuchteFlüge gF : flügeDao.listAllFlughäfen()) {
+		          	for(GebuchteFlüge gF : gebuchteFlügeController.listAllFlughäfen()) {
 		          		out.println("<tr>");
 						out.println("<td>" + gF.getFlugLinie() + "</td>");
 						out.println("<td>" + gF.getHersteller() + " - " + gF.getType() + "</td>");

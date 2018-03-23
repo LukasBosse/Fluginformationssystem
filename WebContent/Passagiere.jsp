@@ -2,9 +2,10 @@
 <%@ page import="com.fis.de.Redirection" %>
 <%@ page import="com.fis.model.User" %>
 <%@ page import="com.fis.model.Passagier" %>
-<%@ page import="com.fis.services.PassagierDao" %>
+<%@ page import="com.fis.controller.PassagierController" %>
 <%@ page import="com.fis.de.Verification" %>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
@@ -37,8 +38,8 @@
 
   <% 	
     new Redirection().checkDirection(session, response, "Mitarbeiter");
-  	PassagierDao passagierDao = new PassagierDao(response.getWriter());
-  	if(request.getParameter("submitPassagierAdd") != null) passagierDao.createPassagier(request.getParameter("kundenname"),request.getParameter("wohnort"),request.getParameter("geburtstag"),Boolean.parseBoolean(request.getParameter("geschlecht")));
+  	PassagierController passagierController = new PassagierController();
+  	if(request.getParameter("submitPassagierAdd") != null) passagierController.createPassagier(response.getWriter(), request.getParameter("kundenname"),request.getParameter("wohnort"),request.getParameter("geburtstag"),Boolean.parseBoolean(request.getParameter("geschlecht")));
   %>
   
    <nav>
@@ -67,7 +68,7 @@
 		        	</thead>		
 		        	<tbody>
 		        		<%
-		        		for(Passagier p : passagierDao.listPassagier()) {
+		        		for(Passagier p : passagierController.listPassagier()) {
 		        			out.println("<tr>");
 		        			out.println("<td>" + p.getName() +"</td>");
 		        			out.println("<td>");

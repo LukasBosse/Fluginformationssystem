@@ -1,37 +1,35 @@
 package com.fis.services;
 
-import java.io.Writer;
+import java.io.PrintWriter;
 
-import javax.annotation.ManagedBean;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 import javax.persistence.Query;
 
-import com.fis.de.HTMLWriter;
-
-@ManagedBean
 public class AbstractDao {
 
 	protected EntityManagerFactory emfactory;
 	protected EntityManager entityManager;
 	protected Query query;
-	
-	protected HTMLWriter htmlWriter;
-	
-	public AbstractDao(Writer oS) {
+			
+	public AbstractDao() {
 		emfactory = Persistence.createEntityManagerFactory("JPA_CONNECTION");
 		entityManager = emfactory.createEntityManager();
-		htmlWriter = new HTMLWriter(oS);
+	}
+	
+	public void writeAlert(PrintWriter pw, String title, String message, String type, String position) {
+		pw.write(("<div style='position: absolute; bottom: 0px; " + position + ": 15px;' class='alert " + type + "'  role='alert'" +
+				"<strong>" + title + "</strong> " + message +
+				  "<button type='button' class='close' data-dismiss='alert' aria-label='Close'>" +
+				    "<span aria-hidden='true'>&times;</span>" +
+				  "</button>" +
+				"</div>"));
 	}
 		
 	public void closeConnection() {
 		entityManager.close();
 		emfactory.close();
-	}
-	
-	public HTMLWriter getWriter() {
-		return htmlWriter;
 	}
 	
 }

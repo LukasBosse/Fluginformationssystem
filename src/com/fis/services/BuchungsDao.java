@@ -1,13 +1,17 @@
 package com.fis.services;
 
-import java.io.Writer;
+
+import java.io.PrintWriter;
 import java.util.List;
+
+import javax.ejb.Stateless;
 
 import com.fis.model.Buchung;
 
+@Stateless
 public class BuchungsDao extends AbstractDao {
 
-	public BuchungsDao(Writer oS) { super(oS); }
+	public BuchungsDao() { super(); }
 	
 	public List<Buchung> findUnbestätigteBuchung() {
 		return entityManager.createQuery("Select b from Buchung b where b.bestaetigt = 0", Buchung.class).getResultList();
@@ -27,17 +31,17 @@ public class BuchungsDao extends AbstractDao {
 		return query.getResultList();
 	}
 	
-	public void updateBuchung(int id) {
+	public void updateBuchung(PrintWriter pw, int id) {
 		try {
 			Buchung b = entityManager.find(Buchung.class, id);
 			entityManager.getTransaction().begin();
 			b.setBestaetigt(!b.getBestaetigt());
 			entityManager.getTransaction().commit();
 		} catch (Exception e) {
-			htmlWriter.writeAlert("Warnung!", "Die Buchung konnte nicht bestätigt werden.", "alert-danger", "right");
+			writeAlert(pw, "Warnung!", "Die Buchung konnte nicht bestätigt werden.", "alert-danger", "right");
 			return;
 		}
-		htmlWriter.writeAlert("Erfolg!", "Die Buchung wurde bestätigt.", "alert-success", "right");
+		writeAlert(pw, "Erfolg!", "Die Buchung wurde bestätigt.", "alert-success", "right");
 	}
 
 }

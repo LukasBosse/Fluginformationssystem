@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Erstellungszeit: 23. Mrz 2018 um 01:52
+-- Erstellungszeit: 23. Mrz 2018 um 15:36
 -- Server-Version: 10.1.25-MariaDB
 -- PHP-Version: 7.1.7
 
@@ -48,8 +48,7 @@ INSERT INTO `abflug` (`flugnr`, `tag`) VALUES
 ('LH222', '2012-10-15'),
 ('LH412', '2012-10-03'),
 ('LH412', '2012-10-08'),
-('LH412', '2012-10-17'),
-('TA129', '2015-01-01');
+('LH412', '2012-10-17');
 
 -- --------------------------------------------------------
 
@@ -73,17 +72,16 @@ CREATE TABLE `buchung` (
 --
 
 INSERT INTO `buchung` (`ID`, `name`, `geschlecht`, `ort`, `flugnr`, `tag`, `preis`, `bestaetigt`) VALUES
-(1, 'Willi', 0, 'DA', 'TA129', '2015-01-01', '10', 1),
 (2, 'Maier', 0, 'München', 'LH222', '2012-10-01', '500', 1),
-(3, 'Maier', 0, 'München', 'LH222', '2012-10-15', '250', 1),
+(3, 'Maier', 0, 'München', 'LH222', '2012-10-15', '250', 0),
 (4, 'Weber', 0, 'Darmstadt', 'LH222', '2012-10-08', '1100', 1),
 (5, 'Weber', 0, 'Darmstadt', 'LH222', '2012-10-15', '600', 1),
-(6, 'Lux', 0, 'Frankfurt', 'LH222', '2012-10-08', '950', 1),
+(6, 'Lux', 0, 'Frankfurt', 'LH222', '2012-10-08', '950', 0),
 (7, 'Lux', 0, 'Frankfurt', 'AF123', '2012-10-13', '300', 1),
 (8, 'Lux', 0, 'Frankfurt', 'AF123', '2012-10-06', '300', 1),
-(9, 'Weber', 0, 'Darmstadt', 'AF123', '2012-10-06', '1100', 1),
-(10, 'Weber', 0, 'Darmstadt', 'AF123', '2012-10-13', '80', 0),
-(11, 'Lux', 0, 'Frankfurt', 'AF123', '2012-10-15', '200', 0);
+(9, 'Weber', 0, 'Darmstadt', 'AF123', '2012-10-06', '1100', 0),
+(10, 'Weber', 0, 'Darmstadt', 'AF123', '2012-10-13', '80', 1),
+(11, 'Lux', 0, 'Frankfurt', 'AF123', '2012-10-15', '200', 1);
 
 -- --------------------------------------------------------
 
@@ -94,8 +92,6 @@ INSERT INTO `buchung` (`ID`, `name`, `geschlecht`, `ort`, `flugnr`, `tag`, `prei
 CREATE TABLE `flug` (
   `flugnr` varchar(12) NOT NULL,
   `flugzeug` int(11) NOT NULL,
-  `start` int(11) DEFAULT NULL,
-  `ziel` int(11) DEFAULT NULL,
   `Startzeit` time NOT NULL,
   `Landezeit` time NOT NULL,
   `flugzeit` decimal(10,2) DEFAULT NULL,
@@ -108,25 +104,40 @@ CREATE TABLE `flug` (
 -- Daten für Tabelle `flug`
 --
 
-INSERT INTO `flug` (`flugnr`, `flugzeug`, `start`, `ziel`, `Startzeit`, `Landezeit`, `flugzeit`, `km`, `timeStamp`, `inklusiveMahlzeit`) VALUES
-('AF123', 2, 2, 4, '00:00:00', '00:00:00', '2.00', 500, '2018-03-19 18:29:48', 1),
-('AY359', 4, 2, 3, '22:10:00', '23:20:00', '1.10', 433, '2018-03-21 21:37:18', 1),
-('DA359', 4, 2, 3, '22:10:00', '23:20:00', '1.00', 433, '2018-03-21 21:33:22', 1),
-('DA959', 4, 2, 3, '22:10:00', '23:20:00', '1.00', 433, '2018-03-21 21:34:26', 1),
-('DE349', 4, 2, 3, '22:10:00', '23:20:00', '1.00', 433, '2018-03-21 21:27:06', 0),
-('DE359', 4, 2, 3, '22:10:00', '23:20:00', '11.00', 433, '2018-03-21 21:27:28', 0),
-('DE399', 4, 2, 3, '22:10:00', '23:20:00', '1.00', 433, '2018-03-21 21:25:39', 0),
-('DE459', 4, 2, 3, '22:10:00', '23:20:00', '1.00', 433, '2018-03-21 21:28:33', 0),
-('DE559', 4, 2, 3, '22:10:00', '23:20:00', '1.00', 433, '2018-03-21 21:29:07', 0),
-('DG559', 4, 2, 3, '22:10:00', '23:20:00', '1.00', 433, '2018-03-21 21:30:19', 0),
-('DM959', 4, 2, 3, '22:10:00', '23:20:00', '1.00', 433, '2018-03-21 21:34:10', 0),
-('DN359', 4, 2, 3, '22:10:00', '23:20:00', '1.00', 433, '2018-03-21 21:32:50', 0),
-('DN559', 4, 2, 3, '22:10:00', '23:20:00', '1.00', 433, '2018-03-21 21:30:59', 0),
-('LH222', 1, 3, 2, '00:00:00', '00:00:00', '8.00', 6000, '2018-03-19 18:29:48', 1),
-('LH412', 2, 1, 4, '00:00:00', '00:00:00', '13.00', 110000, '2018-03-19 18:29:48', 1),
-('ME454', 4, 10, 1, '21:35:00', '23:55:00', '2.20', 200, '2018-03-23 00:33:24', 0),
-('MN495', 6, 10, 1, '14:10:00', '15:25:00', '1.15', 200, '2018-03-23 00:51:37', 0),
-('TA129', 6, 2, 1, '00:00:00', '00:00:00', '2.00', 650, '2018-03-19 18:29:48', 1);
+INSERT INTO `flug` (`flugnr`, `flugzeug`, `Startzeit`, `Landezeit`, `flugzeit`, `km`, `timeStamp`, `inklusiveMahlzeit`) VALUES
+('AF123', 2, '00:00:00', '00:00:00', '2.00', 500, '2018-03-19 18:29:48', 1),
+('LH222', 1, '00:00:00', '00:00:00', '8.00', 6000, '2018-03-19 18:29:48', 1),
+('LH412', 2, '00:00:00', '00:00:00', '13.00', 110000, '2018-03-19 18:29:48', 1);
+
+-- --------------------------------------------------------
+
+--
+-- Tabellenstruktur für Tabelle `fluggesellschaften`
+--
+
+CREATE TABLE `fluggesellschaften` (
+  `ID` int(11) NOT NULL,
+  `Bezeichnung` varchar(255) NOT NULL,
+  `Gesellschaft` varchar(255) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+--
+-- Daten für Tabelle `fluggesellschaften`
+--
+
+INSERT INTO `fluggesellschaften` (`ID`, `Bezeichnung`, `Gesellschaft`) VALUES
+(1, '1I', 'Deutsche Rettungsflugwacht'),
+(2, '2A', 'Deutsche Bahn'),
+(3, '3D', 'Dokasch Air Cargo Equipment'),
+(4, '3S', 'Aerologic'),
+(5, '4U', 'Germanwings'),
+(6, '5P', 'ACM Air Charter'),
+(7, '6U', 'Air Cargo Germany'),
+(8, 'AB', 'Air Berlin'),
+(9, 'DE', 'Condor Flugdienst'),
+(10, 'EW', 'Eurowings'),
+(11, 'LH', 'Lufthansa'),
+(12, 'X3', 'TUIfly');
 
 -- --------------------------------------------------------
 
@@ -145,6 +156,7 @@ CREATE TABLE `flughäfen` (
 
 INSERT INTO `flughäfen` (`ID`, `Bezeichnung`) VALUES
 (2, 'Berlin'),
+(12, 'Bonn'),
 (10, 'Bremen'),
 (1, 'Hannover'),
 (3, 'München'),
@@ -157,28 +169,19 @@ INSERT INTO `flughäfen` (`ID`, `Bezeichnung`) VALUES
 --
 
 CREATE TABLE `fluglinien` (
-  `ID` int(11) NOT NULL,
-  `Bezeichnung` varchar(255) NOT NULL,
-  `Gesellschaft` varchar(255) NOT NULL
+  `Fluglinie` varchar(255) NOT NULL,
+  `Startort` int(11) NOT NULL,
+  `Zielort` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
 -- Daten für Tabelle `fluglinien`
 --
 
-INSERT INTO `fluglinien` (`ID`, `Bezeichnung`, `Gesellschaft`) VALUES
-(1, '1I', 'Deutsche Rettungsflugwacht'),
-(2, '2A', 'Deutsche Bahn'),
-(3, '3D', 'Dokasch Air Cargo Equipment'),
-(4, '3S', 'Aerologic'),
-(5, '4U', 'Germanwings'),
-(6, '5P', 'ACM Air Charter'),
-(7, '6U', 'Air Cargo Germany'),
-(8, 'AB', 'Air Berlin'),
-(9, 'DE', 'Condor Flugdienst'),
-(10, 'EW', 'Eurowings'),
-(11, 'LH', 'Lufthansa'),
-(12, 'X3', 'TUIfly');
+INSERT INTO `fluglinien` (`Fluglinie`, `Startort`, `Zielort`) VALUES
+('AF123', 2, 4),
+('LH222', 3, 2),
+('LH412', 1, 4);
 
 -- --------------------------------------------------------
 
@@ -200,11 +203,9 @@ CREATE TABLE `flugzeuge` (
 --
 
 INSERT INTO `flugzeuge` (`id`, `hersteller`, `type`, `sitze`, `fluglinie`, `fluggesellschaft`) VALUES
-(4, 'Boeing', '777', 777, 'ME454', 5),
 (5, 'Boeing', '747', 450, 'AF123', 8),
-(6, 'Boeing', '747', 450, 'AF123', 8),
-(7, 'Boeing', '797', 300, 'DA959', 1),
-(8, 'Boeing', '343', 301, NULL, 4);
+(9, 'Boeing', '797', 300, 'LH412', 4),
+(11, 'Boeing', '747', 300, 'LH412', 10);
 
 -- --------------------------------------------------------
 
@@ -225,34 +226,12 @@ CREATE TABLE `passagier` (
 
 INSERT INTO `passagier` (`name`, `geschlecht`, `ort`, `geburtsdatum`) VALUES
 ('Bosse', 1, 'Hannover', '05.11.1995'),
-('Luk', 1, 'Lukhaus', '12.03.2000'),
-('Lux', 1, 'Frankfurt', '1985-05-09'),
-('Maier', 1, 'München', '1980-03-27'),
+('Doe', 1, 'Doehausen', '27.12.1960'),
+('Lux', 1, 'Frankfurt', '09.05.1989'),
+('Maier', 1, 'München', '27.03.1970'),
 ('Mustermann', 0, 'Musterstadt', '11.02.2000'),
-('Weber', 0, 'Darmstadt', '1968-09-15'),
-('Willi', 0, 'DA', '2015-01-01');
-
--- --------------------------------------------------------
-
---
--- Tabellenstruktur für Tabelle `relationen`
---
-
-CREATE TABLE `relationen` (
-  `ID` int(11) NOT NULL,
-  `Startort` int(11) NOT NULL,
-  `Zielort` int(11) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
-
---
--- Daten für Tabelle `relationen`
---
-
-INSERT INTO `relationen` (`ID`, `Startort`, `Zielort`) VALUES
-(1, 1, 2),
-(2, 2, 1),
-(3, 10, 4),
-(4, 3, 1);
+('Weber', 0, 'Darmstadt', '15.09.1969'),
+('Willi', 0, 'DA', '01.01.2000');
 
 -- --------------------------------------------------------
 
@@ -300,6 +279,14 @@ ALTER TABLE `flug`
   ADD PRIMARY KEY (`flugnr`);
 
 --
+-- Indizes für die Tabelle `fluggesellschaften`
+--
+ALTER TABLE `fluggesellschaften`
+  ADD PRIMARY KEY (`ID`),
+  ADD UNIQUE KEY `Bezeichnung` (`Bezeichnung`),
+  ADD UNIQUE KEY `Gesellschaft` (`Gesellschaft`);
+
+--
 -- Indizes für die Tabelle `flughäfen`
 --
 ALTER TABLE `flughäfen`
@@ -310,9 +297,8 @@ ALTER TABLE `flughäfen`
 -- Indizes für die Tabelle `fluglinien`
 --
 ALTER TABLE `fluglinien`
-  ADD PRIMARY KEY (`ID`),
-  ADD UNIQUE KEY `Bezeichnung` (`Bezeichnung`),
-  ADD UNIQUE KEY `Gesellschaft` (`Gesellschaft`);
+  ADD PRIMARY KEY (`Fluglinie`),
+  ADD UNIQUE KEY `Fluglinie` (`Fluglinie`);
 
 --
 -- Indizes für die Tabelle `flugzeuge`
@@ -326,12 +312,6 @@ ALTER TABLE `flugzeuge`
 --
 ALTER TABLE `passagier`
   ADD PRIMARY KEY (`name`,`ort`);
-
---
--- Indizes für die Tabelle `relationen`
---
-ALTER TABLE `relationen`
-  ADD PRIMARY KEY (`ID`);
 
 --
 -- Indizes für die Tabelle `users`
@@ -350,30 +330,25 @@ ALTER TABLE `users`
 ALTER TABLE `buchung`
   MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
 --
+-- AUTO_INCREMENT für Tabelle `fluggesellschaften`
+--
+ALTER TABLE `fluggesellschaften`
+  MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
+--
 -- AUTO_INCREMENT für Tabelle `flughäfen`
 --
 ALTER TABLE `flughäfen`
-  MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
---
--- AUTO_INCREMENT für Tabelle `fluglinien`
---
-ALTER TABLE `fluglinien`
   MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
 --
 -- AUTO_INCREMENT für Tabelle `flugzeuge`
 --
 ALTER TABLE `flugzeuge`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
---
--- AUTO_INCREMENT für Tabelle `relationen`
---
-ALTER TABLE `relationen`
-  MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
 --
 -- AUTO_INCREMENT für Tabelle `users`
 --
 ALTER TABLE `users`
-  MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+  MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 --
 -- Constraints der exportierten Tabellen
 --
