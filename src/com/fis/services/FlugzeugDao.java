@@ -27,17 +27,27 @@ public class FlugzeugDao extends AbstractDao {
 	}
 	
 	public void create(Flugzeuge f) {
-		entityManager.getTransaction().begin();
-		entityManager.persist(f);
-		entityManager.getTransaction().commit();	
+		try {
+			entityManager.getTransaction().begin();
+			entityManager.persist(f);
+			entityManager.getTransaction().commit();	
+		} catch (Exception e) {
+	  		htmlWriter.writeAlert("Warnung!", "Das Flugzeug konnte nicht hinzugefügt werden.", "alert-danger", "left");
+	  		return;
+		}
   		htmlWriter.writeAlert("Erfolg!", "Das Flugzeug wurde erfolgreich hinzugefügt.", "alert-success", "left");
 	}
 	
 	public void updateFluglinie(int id, String fluglinie) {
-		Flugzeuge f = findFlugzeug(id);
-		entityManager.getTransaction().begin();
-		f.setFluglinie(fluglinie);
-		entityManager.getTransaction().commit();
+		try {
+			Flugzeuge f = findFlugzeug(id);
+			entityManager.getTransaction().begin();
+			f.setFluglinie(fluglinie);
+			entityManager.getTransaction().commit();
+		} catch(Exception e) {
+	  		htmlWriter.writeAlert("Warung!", "Das Flugzeug konnte nicht zugewiesen werden.", "alert-danger", "left");
+	  		return;
+		}
   		htmlWriter.writeAlert("Erfolg!", "Das Flugzeug wurde erfolgreich zugewiesen.", "alert-success", "left");
 	}
 

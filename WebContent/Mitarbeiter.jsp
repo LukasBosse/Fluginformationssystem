@@ -1,12 +1,11 @@
-<%@ page import="java.sql.ResultSet" %>
-<%@ page import="java.util.HashMap" %>
-<%@ page import="java.util.Map" %>
-<%@ page import="java.util.Iterator" %>
 <%@ page import="javax.servlet.http.HttpServletRequest" %>
-<%@ page import="com.fis.de.DatabaseConnection" %>
-<%@ page import="com.fis.de.HTMLWriter" %>
 <%@ page import="com.fis.de.Redirection" %>
 <%@ page import="com.fis.model.User" %>
+<%@ page import="com.fis.model.Flug" %>
+<%@ page import="com.fis.model.Buchung" %>
+<%@ page import="com.fis.services.FlugDao" %>
+<%@ page import="com.fis.services.BuchungsDao" %>
+<%@ page import="com.fis.services.FlugDao" %>
 <%@ page import="com.fis.de.Verification" %>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
@@ -36,28 +35,11 @@
   <% 
   	
   	new Redirection().checkDirection(session, response, "Mitarbeiter");
-  	HTMLWriter htmlWriter = new HTMLWriter(response.getWriter());
-  	DatabaseConnection dbC = new DatabaseConnection();
-  	ResultSet rs;
+  	BuchungsDao buchungsDao = new BuchungsDao(response.getWriter());
+  	FlugDao flugDao = new FlugDao(response.getWriter());
   	
-  	if(request.getParameter("bestaetigt") != null) {
-  		dbC.connect();
-  		if(dbC.execute("UPDATE buchung SET bestaetigt = bestaetigt WHERE ID = ?", new String[] {request.getParameter("bestaetigt")})) {
-  			htmlWriter.writeAlert("Erfolg!", "Die Buchung wurde bestätigt.", "alert-success", "right");
-  		} else {
-  			htmlWriter.writeAlert("Warnung!", "Die Buchung wurde nicht erfolgreich bestätigt.", "alert-danger", "right");  			
-  		}
-  		dbC.disconnect();
-  	}
-  	if(request.getParameter("inklMahlzeit") != null) {
-  		dbC.connect();
-		if(dbC.execute("UPDATE flug SET inklusiveMahlzeit = !inklusiveMahlzeit WHERE flugnr = ?", new String[] {request.getParameter("inklMahlzeit")})) {
-  			htmlWriter.writeAlert("Erfolg!", "Dem Flug wurde eine Mahlzeit hinzugefügt.", "alert-success", "right");
-  		} else {
-  			htmlWriter.writeAlert("Warnung!", "Die Mahlzeit konnte nicht erfolgreich hinzugefügt werden..", "alert-danger", "right");  			
-  		}
-  		dbC.disconnect();
-  	}
+  	if(request.getParameter("bestaetigt") != null) { buchungsDao.updateBuchung(Integer.parseInt(request.getParameter("bestaetigt"))); }
+  	if(request.getParameter("inklMahlzeit") != null) { flugDao.updateFlug(request.getParameter("inklMahlzeit")); }
   	
   %>
 
@@ -88,22 +70,17 @@
 		        	</thead>		
 		        	<tbody>
 		        		<%
-		        		dbC.connect();
-		        		rs = dbC.executeQuery("SELECT * FROM buchung WHERE bestaetigt = 0 LIMIT 8", null);
-		        		int i = 0;
-		        		while(rs.next()) {
+		        		for(Buchung b : buchungsDao.findUnbestätigteBuchung()) {
 		        			out.println("<tr>");
-		        			out.println("<td>" + rs.getString("name") +"</td>");
-		        			out.println("<td>" + rs.getString("flugnr") +"</td>");
-		        			out.println("<td>" + rs.getString("tag") +"</td>");
-		        			out.println("<td>" + rs.getString("preis") + "</td>");
+		        			out.println("<td>" + b.getName() +"</td>");
+		        			out.println("<td>" + b.getFlugnr() +"</td>");
+		        			out.println("<td>" + b.formatDate(b.getTag()) +"</td>");
+		        			out.println("<td>" + b.getPreis() + "</td>");
 		        			out.println("<td><form action='" + request.getRequestURL() + "' method='GET'>");
-		        			out.println("<input type='checkbox' onChange='this.form.submit();' name='bestaetigt' value='" + rs.getInt("ID") + "' id='bestaetigung" + i + "'><label for='bestaetigung" + i + "'></label>");
+		        			out.println("<input type='checkbox' onChange='this.form.submit();' name='bestaetigt' value='" + b.getId() + "' id='bestaetigung" + b.getId() + "'><label for='bestaetigung" + b.getId() + "'></label>");
 		         			out.println("</form></td>");
 		        			out.println("</tr>");
-		        			i++;
 		        		}
-		        		dbC.disconnect();
 		        		%>
 		        	</tbody>    
 	        	</table>
@@ -118,28 +95,25 @@
 			          <tr>
 			          	  <th>ID</th>
 			              <th>Flugnummer</th>
-			              <th>Flugzeit</th>
+			              <th>Flugzeit (h)</th>
 			              <th>Inklusive Mahlzeit</th>
 			          </tr>
 		        	</thead>		
 		        	<tbody>
 		        		<%
-		        			dbC.connect();
-		        			rs = dbC.executeQuery("SELECT flugnr, flugzeit, inklusiveMahlzeit FROM flug", null);
-		        			int counter = 1;
-		        			while(rs.next()) {
+		        			int i = 1;
+		        			for(Flug f : flugDao.listFlüge()) {
 		        				out.println("<tr>");
-		        				out.println("<td>" + counter +"</td>");
-		        				out.println("<td>" + rs.getString("flugnr") + "</td>");
-		        				out.println("<td>" + rs.getDouble("flugzeit") +"</td>");
+		        				out.println("<td>" + i +"</td>");
+		        				out.println("<td>" + f.getFlugnr() + "</td>");
+		        				out.println("<td>" + f.getFlugzeit() +"</td>");
 			        			out.println("<td><form action='' method='GET'>");
-		        				out.println("<input type='checkbox' name='inklMahlzeit' onChange='this.form.submit();' value='" + rs.getString("flugnr") + "' id='" + counter + "'");
-		        				if(rs.getBoolean("inklusiveMahlzeit")) out.println("checked");
-		        				out.println("/><label for='" + counter + "'></label></form></td>");
+		        				out.println("<input type='checkbox' name='inklMahlzeit' onChange='this.form.submit();' value='" + f.getFlugnr() + "' id='" + i + "'");
+		        				if(f.getInklusiveMahlzeit()) out.println("checked");
+		        				out.println("/><label for='" + i + "'></label></form></td>");
 		        				out.println("</tr>");
-		        				counter++;
+		        				i++;
 		        			}
-		        			dbC.disconnect();
 		        		%>
 		        	</tbody>
 	        	</table>

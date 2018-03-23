@@ -15,6 +15,8 @@
 	    <class>com.fis.model.Buchung</class>
 	    <class>com.fis.model.Fluglinien</class>
 	    <class>com.fis.model.Relationen</class>
+	    <class>com.fis.model.Passagier</class>
+	    <class>com.fis.model.PassagierPK</class>
 	    <properties>
  		  <property name="javax.persistence.jdbc.driver" 	value="com.mysql.jdbc.Driver" />
   		  <property name="javax.persistence.jdbc.url" 		value="jdbc:mysql://localhost:3306/flugbuchung" />

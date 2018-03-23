@@ -18,18 +18,15 @@ public class UserDao extends AbstractDao {
 	}
 	
 	public void create(User u) {
-		entityManager.getTransaction().begin();
-		entityManager.persist(u);
-		entityManager.getTransaction().commit();
-		verify(u);
+		try {
+			entityManager.getTransaction().begin();
+			entityManager.persist(u);
+			entityManager.getTransaction().commit();
+		} catch (Exception e) {
+			htmlWriter.writeAlert("Warnung!", "Ihre Registrierung ist fehlgeschlagen. Bitte prüfen Sie Ihre Eingaben!", "alert-danger", "left");
+			return;
+		} 
+		htmlWriter.writeAlert("Erfolg!", "Sie wurden erfolgreich registriert.", "alert-success", "left");
 	}
-	
-	private void verify(User u) {
-		if(u.getId() != 0) {
-			htmlWriter.writeAlert("Erfolg!", "Sie wurden erfolgreich registriert.", "alert-success", "left");
-		} else {
-			htmlWriter.writeAlert("Warnung!", "Sie konnten leider nicht registriert werden. Bitte prüfen Sie Ihre Eingaben!", "alert-danger", "left");			
-		}
-	}
-	
+		
 }

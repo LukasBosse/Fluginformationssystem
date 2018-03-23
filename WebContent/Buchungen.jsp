@@ -1,10 +1,13 @@
-<%@ page import="java.sql.ResultSet"%>
-<%@ page import="java.util.Iterator"%>
+<%@ page import="java.util.List" %>
 <%@ page import="javax.servlet.http.HttpServletRequest"%>
-<%@ page import="com.fis.de.DatabaseConnection"%>
-<%@ page import="com.fis.de.HTMLWriter"%>
 <%@ page import="com.fis.de.Redirection"%>
 <%@ page import="com.fis.model.User" %>
+<%@ page import="com.fis.model.Flug" %>
+<%@ page import="com.fis.model.Buchung" %>
+<%@ page import="com.fis.model.Passagier" %>
+<%@ page import="com.fis.services.FlugDao" %>
+<%@ page import="com.fis.services.BuchungsDao" %>
+<%@ page import="com.fis.services.PassagierDao" %>
 <%@ page import="com.fis.de.Verification"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"%>
@@ -39,18 +42,17 @@
 		 });
 	 </script>
 
-<title>Fluginformationssystem (FIS) - Mitarbeiteransicht -
-	Buchungen</title>
+<title>Fluginformationssystem (FIS) - Mitarbeiteransicht - Buchungen</title>
 
 </head>
 <body>
 
 	<% 	
   	new Redirection().checkDirection(session, response, "Mitarbeiter");
-  	HTMLWriter htmlWriter = new HTMLWriter(response.getWriter());
-  	DatabaseConnection dbC = new DatabaseConnection();
-  	ResultSet rs;	  	
-  %>
+  	FlugDao flugDao = new FlugDao(response.getWriter());
+  	BuchungsDao buchungsDao = new BuchungsDao(response.getWriter());
+  	PassagierDao passagierDao = new PassagierDao(response.getWriter());
+  	%>
 
 	<nav>
 	<div class="nav-wrapper">
@@ -79,59 +81,53 @@
 								<select id="flugnr" name="flugnr">
 									<option disabled selected value>-- Bitte wählen Sie eine Fluglinie aus --</option>
 									<%
-			  						dbC.connect();
-			  						rs = dbC.executeQuery("SELECT flugnr FROM flug", null);
-			  						while(rs.next()) {
-			  							out.println("<option value='" + rs.getString("flugnr") + "'>" + rs.getString("flugnr") + "</option>");
-			  						}
-			  						dbC.disconnect();
+									for(Flug f : flugDao.listFlüge()) {
+			  							out.println("<option value='" + f.getFlugnr() + "'>" + f.getFlugnr() + "</option>");
+									}
 			  					%>
 								</select> <label for="flugnr">Flugnummer</label>
 							</div>
 							<div class="input-field col s3">
-								<button class="btn waves-effect waves-light" type="submit"
-									name="loadFlugDataByFlugNr">Suchen</button>
+								<button class="btn waves-effect waves-light" type="submit" name="loadFlugDataByFlugNr">Suchen</button>
 							</div>
 						</form>
 					</div>
+						<div class='row'>
+			          					<div class='col s12'>
+		  						<table class='highlight centered'>
+								        <thead>
+								          <tr>
+								              <th>ID</th>
+								              <th>Flugnummer</th>
+								              <th>Name</th>
+								              <th>Ort</th>
+								              <th>Datum</th>
+			        					      <th>Bestätigt</th>
+								          </tr>
+								        </thead>
+								        <tbody id='flugData'>
 					<%
-						         	if(request.getParameter("loadFlugDataByFlugNr") != null && request.getParameter("flugnr") != null) {
-						        	  	dbC.connect();
-						        	 	rs = dbC.executeQuery("SELECT * FROM buchung WHERE flugnr = ?", new String[] {request.getParameter("flugnr")});
-						        	 	int counter = 1;
-						        	 	out.println("<div class='row'>" +
-					          					"<div class='col s12'>" +
-				  						"<table class='highlight centered'>" +
-										        "<thead>" +
-										          "<tr>" +
-										              "<th>ID</th>" +
-										              "<th>Flugnummer</th>" +
-										              "<th>Name</th>" +
-										              "<th>Ort</th>" +
-					        					      "<th>Datum</th>" +
-					        					      "<th>Bestätigt</th>" +
-										          "</tr>" +
-										        "</thead>" +
-										        "<tbody id='flugData'>");
-						        	 	while(rs.next()) {  	 		
-						        	 		out.println("<tr>");
-							        	 		out.println("<td>" + counter +"</td>");
-							        	 		out.println("<td>" + request.getParameter("flugnr") +"</td>");
-							        	 		out.println("<td>" + rs.getString("name") +"</td>");
-							        	 		out.println("<td>" + rs.getString("ort") +"</td>");
-							        	 		out.println("<td>" + rs.getDate("tag") +"</td>");
-							        	 		out.println("<td><input type='checkbox' id='" + counter  +"'");
-							        	 		if(rs.getBoolean("bestaetigt")) {
-							        	 			out.println("checked");
-							        	 		}
-							        	 		out.println("><label for='" + counter + "'></label></td>");
-						        	 		out.println("</tr>");
-						        	 		counter++;
-						        	 	}
-						        	 	out.println("</tbody></table></div></div>");
-						        	 	dbC.disconnect();
-						          	}
-						        	%>
+						if(request.getParameter("loadFlugDataByFlugNr") != null) {
+							int i = 1;
+							for(Buchung b : buchungsDao.findBuchungById(request.getParameter("flugnr"))) {
+			        	 		out.println("<tr>");
+			        	 		out.println("<td>" + i +"</td>");
+			        	 		out.println("<td>" + request.getParameter("flugnr") +"</td>");
+			        	 		out.println("<td>" + b.getName() +"</td>");
+			        	 		out.println("<td>" + b.getOrt() +"</td>");
+			        	 		out.println("<td>" + b.formatDate(b.getTag()) +"</td>");
+			        	 		out.println("<td><input type='checkbox' id='" + i  +"'");
+			        	 		if(b.getBestaetigt()) out.println("checked");
+			        	 		out.println("><label for='" + i + "'></label></td>");
+		        	 			out.println("</tr>");
+			        	 		i++;
+							}
+						}
+					%>
+					</tbody>
+					</table>
+					</div>
+					</div>
 				</div>
 			</div>
 		</div>
@@ -145,12 +141,9 @@
 								<select id="user" name="user">
 									<option disabled selected value>-- Bitte wählen Sie eine Kundennamen aus --</option>
 									<%
-			  						dbC.connect();
-			  						rs = dbC.executeQuery("SELECT name FROM passagier", null);
-			  						while(rs.next()) {
-			  							out.println("<option value='" + rs.getString("name") + "'>" + rs.getString("name") + "</option>");
-			  						}
-			  						dbC.disconnect();
+									for(Passagier p : passagierDao.listPassagier()) {
+			  							out.println("<option value='" + p.getName() + "'>" + p.getName() + "</option>");
+									}
 			  					%>
 								</select> <label for="user">Kundenname</label>
 							</div>
@@ -160,44 +153,42 @@
 							</div>
 						</form>
 					</div>
+					<div class='row'>
+	          			<div class='col s12'>
+  						<table class='highlight centered'>
+						        <thead>
+						          <tr>
+						              <th>ID</th>
+						              <th>Flugnummer</th>
+						              <th>Name</th>
+						              <th>Ort</th>
+	        					      <th>Datum</th>
+	        					      <th>Bestätigt</th>
+						          </tr> 
+						        </thead>
+						        <tbody id='flugData'>
 					<%
-						         	if(request.getParameter("loadFlugDataByUser") != null && request.getParameter("user") != null) {
-						        	  	dbC.connect();
-						        	 	rs = dbC.executeQuery("SELECT * FROM buchung WHERE name = ?", new String[] {request.getParameter("user")});
-						        	 	int counter = 1;
-						        	 	out.println("<div class='row'>" +
-					          					"<div class='col s12'>" +
-				  						"<table class='highlight centered'>" +
-										        "<thead>" +
-										          "<tr>" +
-										              "<th>ID</th>" +
-										              "<th>Flugnummer</th>" +
-										              "<th>Name</th>" +
-										              "<th>Ort</th>" +
-					        					      "<th>Datum</th>" +
-					        					      "<th>Bestätigt</th>" +
-										          "</tr>" +
-										        "</thead>" +
-										        "<tbody id='flugData'>");
-						        	 	while(rs.next()) {  	 		
-						        	 		out.println("<tr>");
-							        	 		out.println("<td>" + counter +"</td>");
-							        	 		out.println("<td>" + rs.getString("flugnr") +"</td>");
-							        	 		out.println("<td>" + rs.getString("name") +"</td>");
-							        	 		out.println("<td>" + rs.getString("ort") +"</td>");
-							        	 		out.println("<td>" + rs.getDate("tag") +"</td>");
-							        	 		out.println("<td><input type='checkbox' id='" + counter  +"'");
-							        	 		if(rs.getBoolean("bestaetigt")) {
-							        	 			out.println("checked");
-							        	 		}
-							        	 		out.println("><label for='" + counter + "'></label></td>");
-						        	 		out.println("</tr>");
-						        	 		counter++;
-						        	 	}
-						        	 	out.println("</tbody></table></div></div>");
-						        	 	dbC.disconnect();
-						          	}
-						        	%>
+					if(request.getParameter("loadFlugDataByUser") != null) {
+						int counter = 1;
+						for(Buchung b : buchungsDao.findBuchungByName(request.getParameter("user"))) {
+			        	 	out.println("<tr>");
+		        	 		out.println("<td>" + counter +"</td>");
+		        	 		out.println("<td>" + b.getFlugnr() +"</td>");
+		        	 		out.println("<td>" + b.getName() +"</td>");
+		        	 		out.println("<td>" + b.getOrt() +"</td>");
+		        	 		out.println("<td>" + b.formatDate(b.getTag()) +"</td>");
+		        	 		out.println("<td><input type='checkbox' id='" + counter  +"'");
+		        	 		if(b.getBestaetigt()) out.println("checked");
+		        	 		out.println("><label for='" + counter + "'></label></td>");
+	        	 			out.println("</tr>");
+	        	 			counter++;
+						}
+					}
+					%>
+						        	</tbody>
+						        	</table>
+						        	</div>
+						        	</div>
 				</div>
 			</div>
 		</div>

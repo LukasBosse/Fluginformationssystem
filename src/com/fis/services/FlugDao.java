@@ -15,16 +15,23 @@ public class FlugDao extends AbstractDao {
 
 	public FlugDao(Writer oS) { super(oS); }
 	
+	public List<Flug> listFlüge() {
+		return entityManager.createQuery("SELECT f From Flug f", Flug.class).getResultList();
+	}
+	
 	public Flug findFlugByFlugNr(String flugNr) {
-		query = entityManager.createQuery("Select f from Flug f where f.flugnr = :flugNr");
-	    query.setParameter("flugNr", flugNr);
-		return (Flug) query.getSingleResult();
+		return entityManager.find(Flug.class, flugNr);
 	}
 	
 	public void create(Flug f) {
-		entityManager.getTransaction().begin();
-		entityManager.persist(f);
-		entityManager.getTransaction().commit();	
+		try {
+			entityManager.getTransaction().begin();
+			entityManager.persist(f);
+			entityManager.getTransaction().commit();	
+		} catch (Exception e) {
+			htmlWriter.writeAlert("Warnung!", "Ihr Flug konnte nicht hinzugefügt werden.", "alert-danger", "right");	
+			return;
+		}
 		htmlWriter.writeAlert("Erfolg!", "Ihr Flug wurde erfolgreich hinzugefügt.", "alert-success", "right");	
 	}
 	
@@ -41,6 +48,19 @@ public class FlugDao extends AbstractDao {
 		return flug;
 	}
 
+	public void updateFlug(String flugNr) {
+		try {
+			Flug flug = entityManager.find(Flug.class, flugNr);
+			entityManager.getTransaction().begin();
+			flug.setInklusiveMahlzeit(!flug.getInklusiveMahlzeit());
+			entityManager.getTransaction().commit();
+		} catch (Exception e) {
+			htmlWriter.writeAlert("Warnung!", "Dem Flug konnte keine Mahlzeit hinzugefügt werden.", "alert-danger", "left");
+			return;
+		}
+		htmlWriter.writeAlert("Erfolg!", "Dem Flug wurde eine Mahlzeit hinzugefügt.", "alert-success", "left");
+	}
+	
 	@SuppressWarnings("unchecked")
 	public List<Object[]> listAllFluglinien() {
 		List<Object[]> obj = entityManager.createNativeQuery("SELECT f.flugnr, flS.Bezeichnung As `Start`, flD.Bezeichnung As `Ziel` FROM `flug` As `f` INNER JOIN flughäfen AS `flS` ON flS.ID = f.start INNER JOIN flughäfen As `flD` ON flD.ID = f.ziel").getResultList();

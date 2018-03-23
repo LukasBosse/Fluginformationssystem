@@ -3,6 +3,8 @@ package com.fis.model;
 import java.io.Serializable;
 import javax.persistence.*;
 import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 
 /**
@@ -17,7 +19,7 @@ public class Buchung implements Serializable {
 	@Id
 	private int id;
 
-	private byte bestaetigt;
+	private boolean bestaetigt;
 
 	private String flugnr;
 
@@ -43,11 +45,11 @@ public class Buchung implements Serializable {
 		this.id = id;
 	}
 
-	public byte getBestaetigt() {
+	public boolean getBestaetigt() {
 		return this.bestaetigt;
 	}
 
-	public void setBestaetigt(byte bestaetigt) {
+	public void setBestaetigt(boolean bestaetigt) {
 		this.bestaetigt = bestaetigt;
 	}
 
@@ -97,6 +99,11 @@ public class Buchung implements Serializable {
 
 	public void setTag(java.util.Date tag) {
 		this.tag = tag;
+	}
+	
+	public String formatDate(Date date) {
+        SimpleDateFormat formatter = new SimpleDateFormat("dd.MM.yyyy");
+        return formatter.format(date);
 	}
 
 }

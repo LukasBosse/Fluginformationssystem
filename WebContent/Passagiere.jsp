@@ -1,12 +1,8 @@
-<%@ page import="java.sql.ResultSet" %>
-<%@ page import="java.util.HashMap" %>
-<%@ page import="java.util.Map" %>
-<%@ page import="java.util.Iterator" %>
 <%@ page import="javax.servlet.http.HttpServletRequest" %>
-<%@ page import="com.fis.de.DatabaseConnection" %>
-<%@ page import="com.fis.de.HTMLWriter" %>
 <%@ page import="com.fis.de.Redirection" %>
 <%@ page import="com.fis.model.User" %>
+<%@ page import="com.fis.model.Passagier" %>
+<%@ page import="com.fis.services.PassagierDao" %>
 <%@ page import="com.fis.de.Verification" %>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
@@ -40,24 +36,9 @@
  <body>
 
   <% 	
-  	
     new Redirection().checkDirection(session, response, "Mitarbeiter");
-  	HTMLWriter htmlWriter = new HTMLWriter(response.getWriter());
-  	DatabaseConnection dbC = new DatabaseConnection();
-  	ResultSet rs;
-  	
-  	if(request.getParameter("submitPassagierAdd") != null) {
-  		if(request.getParameter("geschlecht") != null && request.getParameter("kundenname") != null && request.getParameter("wohnort") != null && request.getParameter("geburtstag") != null) {
-  			dbC.connect();
-  			if(dbC.execute("INSERT INTO passagier (name, geschlecht, ort, geburtsdatum) VALUES (?,?,?,?)", new String[] {request.getParameter("kundenname"),request.getParameter("geschlecht"),request.getParameter("wohnort"),request.getParameter("geburtstag")})) {
-  				htmlWriter.writeAlert("Erfolg!", "Der Passagier wurde erfolgreich hinzugefügt.", "alert-success", "right");
-  			} else {
-  				htmlWriter.writeAlert("Warnung!", "Der Passagier konnte nicht hinzugefügt werden.", "alert-danger", "right");  				
-  			}
-  			dbC.disconnect();
-  		}
-  	}
-  	
+  	PassagierDao passagierDao = new PassagierDao(response.getWriter());
+  	if(request.getParameter("submitPassagierAdd") != null) passagierDao.createPassagier(request.getParameter("kundenname"),request.getParameter("wohnort"),request.getParameter("geburtstag"),Boolean.parseBoolean(request.getParameter("geschlecht")));
   %>
   
    <nav>
@@ -86,24 +67,21 @@
 		        	</thead>		
 		        	<tbody>
 		        		<%
-		        		dbC.connect();
-		        		rs = dbC.executeQuery("SELECT * FROM passagier LIMIT 9", null);
-		        		while(rs.next()) {
+		        		for(Passagier p : passagierDao.listPassagier()) {
 		        			out.println("<tr>");
-			        			out.println("<td>" + rs.getString("name") +"</td>");
-			        			out.println("<td>");
-			        			if(rs.getInt("geschlecht")==0) {
-			        				out.println("Männlich");
-			        			} else {
-			        				out.println("Weiblich");
-			        			}
-			        			out.println("</td>");
-			        			out.println("<td>" + rs.getString("ort") +"</td>");
-			        			out.println("<td>" + rs.getString("geburtsdatum") + "</td>");
-			         			out.println("</td>");
-		        			out.println("</tr>");
+		        			out.println("<td>" + p.getName() +"</td>");
+		        			out.println("<td>");
+		        			if(p.getGeschlecht()) {
+		        				out.println("Männlich");
+		        			} else {
+		        				out.println("Weiblich");
+		        			}
+		        			out.println("</td>");
+		        			out.println("<td>" + p.getOrt() +"</td>");
+		        			out.println("<td>" + p.getGeburtsdatum() + "</td>");
+		         			out.println("</td>");
+	        				out.println("</tr>");
 		        		}
-		        		dbC.disconnect();
 		        		%>
 		        	</tbody>    
 	        	</table>
@@ -118,8 +96,8 @@
 	  					<div class="input-field col s12">
 	  						<select id="geschlecht" name="geschlecht" class="validate" required>
 	  							<option disabled selected value>Bitte wählen Sie ein Geschlecht aus</option>
-	  							<option value="0">Herr</option>
-	  							<option value="1">Frau</option>
+	  							<option value="true">Herr</option>
+	  							<option value="false">Frau</option>
 	  						</select>
 	  						<label for="geschlecht">Geschlecht</label>
 	  					</div>

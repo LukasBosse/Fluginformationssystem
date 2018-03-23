@@ -1,8 +1,5 @@
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1"
 	pageEncoding="ISO-8859-1"%>
-<%@ page import="java.sql.ResultSet"%>
-<%@ page import="com.fis.de.DatabaseConnection"%>
-<%@ page import="com.fis.de.Directory"%>
 <%@ page import="com.fis.de.HTMLWriter"%>
 <%@ page import="com.fis.model.User" %>
 <%@ page import="com.fis.de.Verification"%>
