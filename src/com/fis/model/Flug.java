@@ -29,13 +29,9 @@ public class Flug implements Serializable {
 
 	private Time landezeit;
 
-	private int start;
-
 	private Time startzeit;
 
 	private Timestamp timeStamp;
-
-	private int ziel;
 
 	public Flug() {
 	}
@@ -88,14 +84,6 @@ public class Flug implements Serializable {
 		this.landezeit = landezeit;
 	}
 
-	public int getStart() {
-		return this.start;
-	}
-
-	public void setStart(int start) {
-		this.start = start;
-	}
-
 	public Time getStartzeit() {
 		return this.startzeit;
 	}
@@ -110,14 +98,6 @@ public class Flug implements Serializable {
 
 	public void setTimeStamp(Timestamp timeStamp) {
 		this.timeStamp = timeStamp;
-	}
-
-	public int getZiel() {
-		return this.ziel;
-	}
-
-	public void setZiel(int ziel) {
-		this.ziel = ziel;
 	}
 
 }

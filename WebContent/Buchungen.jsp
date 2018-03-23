@@ -5,12 +5,12 @@
 <%@ page import="com.fis.model.Flug" %>
 <%@ page import="com.fis.model.Buchung" %>
 <%@ page import="com.fis.model.Passagier" %>
-<%@ page import="com.fis.services.FlugDao" %>
-<%@ page import="com.fis.services.BuchungsDao" %>
-<%@ page import="com.fis.services.PassagierDao" %>
+<%@ page import="com.fis.controller.FlugController" %>
+<%@ page import="com.fis.controller.BuchungsController" %>
+<%@ page import="com.fis.controller.PassagierController" %>
 <%@ page import="com.fis.de.Verification"%>
-<%@ page language="java" contentType="text/html; charset=UTF-8"
-	pageEncoding="UTF-8"%>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
@@ -49,10 +49,10 @@
 
 	<% 	
   	new Redirection().checkDirection(session, response, "Mitarbeiter");
-  	FlugDao flugDao = new FlugDao(response.getWriter());
-  	BuchungsDao buchungsDao = new BuchungsDao(response.getWriter());
-  	PassagierDao passagierDao = new PassagierDao(response.getWriter());
-  	%>
+	FlugController flugController = new FlugController();
+	BuchungsController buchungsController = new BuchungsController();
+	PassagierController passagierController = new PassagierController();
+	%>
 
 	<nav>
 	<div class="nav-wrapper">
@@ -81,7 +81,7 @@
 								<select id="flugnr" name="flugnr">
 									<option disabled selected value>-- Bitte wählen Sie eine Fluglinie aus --</option>
 									<%
-									for(Flug f : flugDao.listFlüge()) {
+									for(Flug f : flugController.listFlüge()) {
 			  							out.println("<option value='" + f.getFlugnr() + "'>" + f.getFlugnr() + "</option>");
 									}
 			  					%>
@@ -109,7 +109,7 @@
 					<%
 						if(request.getParameter("loadFlugDataByFlugNr") != null) {
 							int i = 1;
-							for(Buchung b : buchungsDao.findBuchungById(request.getParameter("flugnr"))) {
+							for(Buchung b : buchungsController.findBuchungById(request.getParameter("flugnr"))) {
 			        	 		out.println("<tr>");
 			        	 		out.println("<td>" + i +"</td>");
 			        	 		out.println("<td>" + request.getParameter("flugnr") +"</td>");
@@ -141,7 +141,7 @@
 								<select id="user" name="user">
 									<option disabled selected value>-- Bitte wählen Sie eine Kundennamen aus --</option>
 									<%
-									for(Passagier p : passagierDao.listPassagier()) {
+									for(Passagier p : passagierController.listPassagier()) {
 			  							out.println("<option value='" + p.getName() + "'>" + p.getName() + "</option>");
 									}
 			  					%>
@@ -170,7 +170,7 @@
 					<%
 					if(request.getParameter("loadFlugDataByUser") != null) {
 						int counter = 1;
-						for(Buchung b : buchungsDao.findBuchungByName(request.getParameter("user"))) {
+						for(Buchung b : buchungsController.findBuchungByName(request.getParameter("user"))) {
 			        	 	out.println("<tr>");
 		        	 		out.println("<td>" + counter +"</td>");
 		        	 		out.println("<td>" + b.getFlugnr() +"</td>");

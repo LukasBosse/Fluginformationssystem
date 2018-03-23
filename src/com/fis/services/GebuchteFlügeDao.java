@@ -1,21 +1,20 @@
 package com.fis.services;
 
-import java.io.Writer;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.annotation.ManagedBean;
+import javax.ejb.Stateless;
 
 import com.fis.model.GebuchteFlüge;
 
-@ManagedBean
+@Stateless
 public class GebuchteFlügeDao extends AbstractDao {
 
-	public GebuchteFlügeDao(Writer oS) { super(oS); }
+	public GebuchteFlügeDao() { super(); }
 	
 	@SuppressWarnings("unchecked")
 	public List<GebuchteFlüge> listAllFlughäfen() {
-		List<Object[]> results = entityManager.createNativeQuery("SELECT fZ.fluglinie, fZ.hersteller, fZ.type, fH.Bezeichnung As Startort, fHZ.Bezeichnung As Zielort, f.flugzeit, f.km , COUNT(b.flugnr) As Auslastung, fZ.sitze As Kapazität FROM Flugzeuge As fZ INNER JOIN Flug As f ON fZ.fluglinie = f.flugnr INNER JOIN Flughäfen As fH ON fH.ID = f.start INNER JOIN Flughäfen As fHZ ON fHZ.ID = f.ziel INNER JOIN Buchung As b ON b.flugnr = fZ.fluglinie GROUP BY fZ.fluglinie").getResultList();
+		List<Object[]> results = entityManager.createNativeQuery("SELECT fZ.fluglinie, fZ.hersteller, fZ.type, fH.Bezeichnung As Startort, fHZ.Bezeichnung As Zielort, f.flugzeit, f.km, Count(b.flugnr) As Auslastung, fZ.sitze As Kapazität from Flugzeuge As fZ, Flug As f, Fluglinien As fL INNER JOIN Flughäfen As fH ON fH.ID = fL.Startort INNER JOIN Flughäfen As fHZ ON fHZ.ID = fL.Zielort INNER JOIN Buchung As b ON fL.Fluglinie = b.flugnr WHERE f.flugnr = fZ.fluglinie AND f.flugnr = fL.Fluglinie GROUP BY f.flugnr").getResultList();
 		List<GebuchteFlüge> liste = new ArrayList<GebuchteFlüge>();
 		for(Object[] result : results) {
 			GebuchteFlüge gF = new GebuchteFlüge();

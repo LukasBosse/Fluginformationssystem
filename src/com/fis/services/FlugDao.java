@@ -1,6 +1,6 @@
 package com.fis.services;
 
-import java.io.Writer;
+import java.io.PrintWriter;
 import java.math.BigDecimal;
 import java.sql.Time;
 import java.text.DateFormat;
@@ -9,11 +9,14 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
+import javax.ejb.Stateless;
+
 import com.fis.model.Flug;
 
+@Stateless
 public class FlugDao extends AbstractDao {
 
-	public FlugDao(Writer oS) { super(oS); }
+	public FlugDao() { super(); }
 	
 	public List<Flug> listFlüge() {
 		return entityManager.createQuery("SELECT f From Flug f", Flug.class).getResultList();
@@ -23,47 +26,51 @@ public class FlugDao extends AbstractDao {
 		return entityManager.find(Flug.class, flugNr);
 	}
 	
-	public void create(Flug f) {
+	public void create(PrintWriter pw, Flug f) {
 		try {
 			entityManager.getTransaction().begin();
 			entityManager.persist(f);
 			entityManager.getTransaction().commit();	
 		} catch (Exception e) {
-			htmlWriter.writeAlert("Warnung!", "Ihr Flug konnte nicht hinzugefügt werden.", "alert-danger", "right");	
+			writeAlert(pw, "Warnung!", "Ihr Flug konnte nicht hinzugefügt werden.", "alert-danger", "right");	
 			return;
 		}
-		htmlWriter.writeAlert("Erfolg!", "Ihr Flug wurde erfolgreich hinzugefügt.", "alert-success", "right");	
+		writeAlert(pw, "Erfolg!", "Ihr Flug wurde erfolgreich hinzugefügt.", "alert-success", "right");	
 	}
 	
-	public Flug generateFlug(String flugnr, String flugzeug, String km, String landezeit, String start, String startzeit,String ziel) {
+	public Flug generateFlug(PrintWriter pw, String flugnr, String flugzeug, String km, String landezeit, String startzeit) {
 		Flug flug = new Flug();
 		flug.setFlugnr(flugnr);
 		flug.setFlugzeug(Integer.parseInt(flugzeug));
 		flug.setKm(Integer.parseInt(km));
-		flug.setStart(Integer.parseInt(start));
-		flug.setZiel(Integer.parseInt(ziel));
 		flug.setStartzeit(timeFormatter(startzeit));
 		flug.setLandezeit(timeFormatter(landezeit));
-		flug.setFlugzeit(BigDecimal.valueOf(getFlugzeit(flug.getStartzeit(), flug.getLandezeit())));
+		BigDecimal flugzeit = BigDecimal.valueOf(getFlugzeit(pw,flug.getStartzeit(), flug.getLandezeit()));
+		BigDecimal compareFlugzeit = BigDecimal.valueOf(0.0);
+		if(flugzeit.compareTo(compareFlugzeit) == 0) {
+			return null;
+		}
+		flug.setFlugzeit(flugzeit);
+		create(pw, flug);
 		return flug;
 	}
 
-	public void updateFlug(String flugNr) {
+	public void updateFlug(PrintWriter pw, String flugNr) {
 		try {
 			Flug flug = entityManager.find(Flug.class, flugNr);
 			entityManager.getTransaction().begin();
 			flug.setInklusiveMahlzeit(!flug.getInklusiveMahlzeit());
 			entityManager.getTransaction().commit();
 		} catch (Exception e) {
-			htmlWriter.writeAlert("Warnung!", "Dem Flug konnte keine Mahlzeit hinzugefügt werden.", "alert-danger", "left");
+			writeAlert(pw, "Warnung!", "Dem Flug konnte keine Mahlzeit hinzugefügt werden.", "alert-danger", "left");
 			return;
 		}
-		htmlWriter.writeAlert("Erfolg!", "Dem Flug wurde eine Mahlzeit hinzugefügt.", "alert-success", "left");
+		writeAlert(pw, "Erfolg!", "Dem Flug wurde eine Mahlzeit hinzugefügt.", "alert-success", "left");
 	}
 	
 	@SuppressWarnings("unchecked")
 	public List<Object[]> listAllFluglinien() {
-		List<Object[]> obj = entityManager.createNativeQuery("SELECT f.flugnr, flS.Bezeichnung As `Start`, flD.Bezeichnung As `Ziel` FROM `flug` As `f` INNER JOIN flughäfen AS `flS` ON flS.ID = f.start INNER JOIN flughäfen As `flD` ON flD.ID = f.ziel").getResultList();
+		List<Object[]> obj = entityManager.createNativeQuery("SELECT f.flugnr, flS.Bezeichnung As `Start`, flD.Bezeichnung As `Ziel` FROM `flug` As `f`, fluglinien As `fl` INNER JOIN flughäfen AS `flS` ON flS.ID = fl.Startort INNER JOIN flughäfen As `flD` ON flD.ID = fl.Zielort WHERE f.flugnr = fl.Fluglinie").getResultList();
 		return obj;
 	}
 
@@ -78,7 +85,11 @@ public class FlugDao extends AbstractDao {
 		return null;
 	}
 
-	public double getFlugzeit(Date d1, Date d2) {
+	public double getFlugzeit(PrintWriter pw, Date d1, Date d2) {
+		if(d1.getTime() > d2.getTime()) {
+			writeAlert(pw, "Warnung!", "Die Startzeit darf nicht nach der Landezeit liegen.", "alert-danger", "left");
+			return 0.0;
+		}
 		long diff = calcDifferenz(d1,d2);
 		return Double.parseDouble(calcToHour(diff) + "." + (calcToMin(diff)));
 	}

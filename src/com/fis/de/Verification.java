@@ -1,35 +1,35 @@
 package com.fis.de;
 
 import java.io.IOException;
-import java.io.Writer;
+import java.io.PrintWriter;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
-import javax.annotation.ManagedBean;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import javax.xml.bind.DatatypeConverter;
 
+import com.fis.controller.UserController;
 import com.fis.model.User;
-import com.fis.services.UserDao;
 
-@ManagedBean
 public class Verification {
 	
-	private UserDao userDao;
+	private UserController userController;
+	private PrintWriter pw;
 	
-	public Verification(Writer writer) { 
-		userDao = new UserDao(writer);
+	public Verification(PrintWriter pw) { 
+		userController = new UserController();
+		this.pw = pw;
 	}
 	
-	public void register(String username, String userType, String password) {
+	public void register(PrintWriter pw, String username, String userType, String password) {
 		User user = new User(username, toMD5(password), userType);
-		userDao.create(user);
+		userController.create(pw, user);
 	}
 	
 	public void login(String username, String password, HttpSession session, HttpServletRequest request, HttpServletResponse response) {
-		User user = userDao.findUser(username);
+		User user = userController.findUser(username);
 		if(user.getPasswort().equals(toMD5(password))) {
 			session.setAttribute("user", user);
 			try {
@@ -38,7 +38,7 @@ public class Verification {
 				e.printStackTrace();
 			}
 		}
-		userDao.getWriter().writeAlert("Warnung!", "Ihre Anmeldung ist leider fehlgeschlagen. Bitte prüfen Sie Ihre Eingaben!", "alert-danger", "left");
+		userController.getWriter().writeAlert(pw, "Warnung!", "Ihre Anmeldung ist leider fehlgeschlagen. Bitte prüfen Sie Ihre Eingaben!", "alert-danger", "left");
 	}
 
 	public static String toMD5(String pass) {

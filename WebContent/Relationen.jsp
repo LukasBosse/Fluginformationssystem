@@ -1,10 +1,11 @@
 <%@ page import="java.util.List" %>
 <%@ page import="javax.servlet.http.HttpServletRequest" %>
 <%@ page import="com.fis.de.Redirection" %>
-<%@ page import="com.fis.services.FlughafenDao" %>
-<%@ page import="com.fis.services.RelationenDao" %>
+<%@ page import="com.fis.controller.FlughafenController" %>
+<%@ page import="com.fis.controller.FluglinienController" %>
 <%@ page import="com.fis.model.User" %>
 <%@ page import="com.fis.model.Flughäfen" %>
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
@@ -36,11 +37,10 @@
 
 	<% 
 		new Redirection().checkDirection(session, response, "Manager");
-		FlughafenDao flughafenDao = new FlughafenDao(response.getWriter());
-		RelationenDao relationenDao = new RelationenDao(response.getWriter());
-		
-		if(request.getParameter("submitFlughafenAdd") != null) flughafenDao.createFlughafen(request.getParameter("flughafenBezeichnung"));
-		if(request.getParameter("submitRelationAdd") != null) { relationenDao.createRelation(Integer.parseInt(request.getParameter("startOrt")), Integer.parseInt(request.getParameter("landeOrt"))); }		
+		FlughafenController flughafenController = new FlughafenController();
+		FluglinienController fluglinienController = new FluglinienController();		
+		if(request.getParameter("submitFlughafenAdd") != null) flughafenController.createFlughafen(response.getWriter(),request.getParameter("flughafenBezeichnung"));
+		if(request.getParameter("submitRelationAdd") != null) fluglinienController.createRelation(response.getWriter(), request.getParameter("fluglinie"), Integer.parseInt(request.getParameter("startOrt")), Integer.parseInt(request.getParameter("landeOrt")));		
 		
 	%>
 
@@ -74,32 +74,40 @@
   	</div>
   	
   	<div class="row cardPanel">
-  		<div class="col s12">
+  		<div class="col s6">
   			<div class="card">
   				<div class="card-content" style="padding-bottom: 0 !important;">
   					<form action="<% out.println(request.getRequestURL());%>" method="post" class="row">
-			        	<div class="input-field col s6">
-				        	<select id="startOrt" name="startOrt">
-				        		<option disabled selected value>Bitte wählen Sie einen Startflughafen aus</option>
-				        		<%
-				        			List<Flughäfen> flughäfenList = flughafenDao.listAllFlughäfen();
-				        			for(Flughäfen f : flughäfenList) {
-	      								out.println("<option value='" + f.getId() + "'>" + f.getBezeichnung() + "</option>");
-				        			}
-				        		%>
-				        	</select>
-				        	<label for="startOrt">Startort</label>
-				        </div>
-				        <div class="input-field col s6">
-				        	<select id="landeOrt" name="landeOrt">
-				        		<option disabled selected value>Bitte wählen Sie einen Zielflughafen aus</option>
-				        		<%
-				        			for(Flughäfen f : flughäfenList) {
-	      								out.println("<option value='" + f.getId() + "'>" + f.getBezeichnung() + "</option>");
-				        			}
-				        		%>
-				        	</select>
-				        	<label for="zielOrt">Zielort</label>
+  						<div class="row">
+	  						<div class="input-field col s12">
+	  							<input type="text" name="fluglinie" id="fluglinie" class="validate" required>
+	  							<label for="fluglinie">Fluglinienbezeichnung <small>(bspw. LH412)</small></label>
+	  						</div>
+  						</div>
+  						<div class="row">
+				        	<div class="input-field col s6">
+					        	<select id="startOrt" name="startOrt" class="validate" required>
+					        		<option disabled selected value>Bitte wählen Sie einen Startflughafen aus</option>
+					        		<%
+					        			List<Flughäfen> flughäfenList = flughafenController.listAllFlughäfen();
+					        			for(Flughäfen f : flughäfenList) {
+		      								out.println("<option value='" + f.getId() + "'>" + f.getBezeichnung() + "</option>");
+					        			}
+					        		%>
+					        	</select>
+					        	<label for="startOrt">Startort</label>
+					        </div>
+					        <div class="input-field col s6">
+					        	<select id="landeOrt" name="landeOrt" class="validate" required>
+					        		<option disabled selected value>Bitte wählen Sie einen Zielflughafen aus</option>
+					        		<%
+					        			for(Flughäfen f : flughäfenList) {
+		      								out.println("<option value='" + f.getId() + "'>" + f.getBezeichnung() + "</option>");
+					        			}
+					        		%>
+					        	</select>
+					        	<label for="zielOrt">Zielort</label>
+				        	</div>
 			        	</div>
 			        	<div class="row">
 			        		<div class="input-field col s12">
@@ -110,38 +118,34 @@
   				</div>
   			</div>
   		</div>
-  	</div>
-  	
-  	<div class="row cardPanel">
-  		<div class="col s6"></div>
   		<div class="col s6">
 	  		<div class="card">
-	  			<div class="card-content">
-	  				 <table class="highlight centered">
-				        <thead>
-				          <tr>
-				              <th>ID</th>
-				              <th>Starthafen</th>
-				              <th>Zielhafen</th>
-				          </tr>
-				        </thead>
-				        <tbody>
-	  				<%	
-						int i = 1;
-	  					for(Object[] obj : relationenDao.listRelationen()) {
-					    	out.println("<tr>");
-					    	out.println("<td>" + i + "</td>");
-					    	out.println("<td>" + obj[0] +  "</td>");
-					    	out.println("<td>" + obj[1] +  "</td>");
-					    	out.println("</tr>");
-					    	i++;
-	  					}
-	  				%>
-	  				  </tbody>
-			      </table>
-	  			</div>
+		  			<div class="card-content">
+		  				 <table class="highlight centered">
+					        <thead>
+					          <tr>
+					              <th>Fluglinie</th>
+					              <th>Starthafen</th>
+					              <th>Zielhafen</th>
+					          </tr>
+					        </thead>
+					        <tbody>
+		  				<%	
+							int i = 1;
+		  					for(Object[] obj : fluglinienController.listRelationen()) {
+						    	out.println("<tr>");
+						    	out.println("<td>" + obj[0] + "</td>");
+						    	out.println("<td>" + obj[1] +  "</td>");
+						    	out.println("<td>" + obj[2] +  "</td>");
+						    	out.println("</tr>");
+						    	i++;
+		  					}
+		  				%>
+		  				  </tbody>
+				      </table>
+		  			</div>
+		  		</div>
 	  		</div>
-  		</div>
   	</div>
 
 <body>

@@ -1,15 +1,14 @@
 package com.fis.services;
 
-import java.io.Writer;
+import java.io.PrintWriter;
 
-import javax.annotation.ManagedBean;
-
+import javax.ejb.Stateless;
 import com.fis.model.User;
 
-@ManagedBean
+@Stateless
 public class UserDao extends AbstractDao {
-				
-	public UserDao(Writer oS) { super(oS); }
+			
+	public UserDao() { super(); }
 	
 	public User findUser(String username) {
 	    query = entityManager.createQuery("Select u from User u where u.username = :username");
@@ -17,16 +16,16 @@ public class UserDao extends AbstractDao {
 		return (User) query.getSingleResult();
 	}
 	
-	public void create(User u) {
+	public void create(PrintWriter pw, User u) {
 		try {
 			entityManager.getTransaction().begin();
 			entityManager.persist(u);
 			entityManager.getTransaction().commit();
 		} catch (Exception e) {
-			htmlWriter.writeAlert("Warnung!", "Ihre Registrierung ist fehlgeschlagen. Bitte prüfen Sie Ihre Eingaben!", "alert-danger", "left");
+			writeAlert(pw, "Warnung!", "Ihre Registrierung ist fehlgeschlagen. Bitte prüfen Sie Ihre Eingaben!", "alert-danger", "left");
 			return;
 		} 
-		htmlWriter.writeAlert("Erfolg!", "Sie wurden erfolgreich registriert.", "alert-success", "left");
+		writeAlert(pw, "Erfolg!", "Sie wurden erfolgreich registriert.", "alert-success", "left");
 	}
-		
+			
 }

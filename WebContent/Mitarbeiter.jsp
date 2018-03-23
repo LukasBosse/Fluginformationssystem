@@ -3,11 +3,11 @@
 <%@ page import="com.fis.model.User" %>
 <%@ page import="com.fis.model.Flug" %>
 <%@ page import="com.fis.model.Buchung" %>
-<%@ page import="com.fis.services.FlugDao" %>
-<%@ page import="com.fis.services.BuchungsDao" %>
-<%@ page import="com.fis.services.FlugDao" %>
+<%@ page import="com.fis.controller.BuchungsController" %>
+<%@ page import="com.fis.controller.FlugController" %>
 <%@ page import="com.fis.de.Verification" %>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
@@ -35,11 +35,11 @@
   <% 
   	
   	new Redirection().checkDirection(session, response, "Mitarbeiter");
-  	BuchungsDao buchungsDao = new BuchungsDao(response.getWriter());
-  	FlugDao flugDao = new FlugDao(response.getWriter());
+  	BuchungsController buchungsController = new BuchungsController();
+  	FlugController flugController = new FlugController();
   	
-  	if(request.getParameter("bestaetigt") != null) { buchungsDao.updateBuchung(Integer.parseInt(request.getParameter("bestaetigt"))); }
-  	if(request.getParameter("inklMahlzeit") != null) { flugDao.updateFlug(request.getParameter("inklMahlzeit")); }
+  	if(request.getParameter("bestaetigt") != null) { buchungsController.updateBuchung(response.getWriter(), Integer.parseInt(request.getParameter("bestaetigt"))); }
+  	if(request.getParameter("inklMahlzeit") != null) { flugController.updateFlug(response.getWriter(),request.getParameter("inklMahlzeit")); }
   	
   %>
 
@@ -70,7 +70,7 @@
 		        	</thead>		
 		        	<tbody>
 		        		<%
-		        		for(Buchung b : buchungsDao.findUnbestätigteBuchung()) {
+		        		for(Buchung b : buchungsController.findUnbestätigteBuchung()) {
 		        			out.println("<tr>");
 		        			out.println("<td>" + b.getName() +"</td>");
 		        			out.println("<td>" + b.getFlugnr() +"</td>");
@@ -102,7 +102,7 @@
 		        	<tbody>
 		        		<%
 		        			int i = 1;
-		        			for(Flug f : flugDao.listFlüge()) {
+		        			for(Flug f : flugController.listFlüge()) {
 		        				out.println("<tr>");
 		        				out.println("<td>" + i +"</td>");
 		        				out.println("<td>" + f.getFlugnr() + "</td>");

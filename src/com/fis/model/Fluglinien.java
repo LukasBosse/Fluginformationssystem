@@ -14,37 +14,43 @@ public class Fluglinien implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
-	private int id;
+	private String fluglinie;
 
-	private String bezeichnung;
+	private int startort;
 
-	private String gesellschaft;
+	private int zielort;
 
 	public Fluglinien() {
 	}
-
-	public int getId() {
-		return this.id;
+	
+	public Fluglinien(String fluglinie, int startort, int zielort) {
+		this.fluglinie = fluglinie;
+		this.startort = startort;
+		this.zielort = zielort;
 	}
 
-	public void setId(int id) {
-		this.id = id;
+	public String getFluglinie() {
+		return this.fluglinie;
 	}
 
-	public String getBezeichnung() {
-		return this.bezeichnung;
+	public void setFluglinie(String fluglinie) {
+		this.fluglinie = fluglinie;
 	}
 
-	public void setBezeichnung(String bezeichnung) {
-		this.bezeichnung = bezeichnung;
+	public int getStartort() {
+		return this.startort;
 	}
 
-	public String getGesellschaft() {
-		return this.gesellschaft;
+	public void setStartort(int startort) {
+		this.startort = startort;
 	}
 
-	public void setGesellschaft(String gesellschaft) {
-		this.gesellschaft = gesellschaft;
+	public int getZielort() {
+		return this.zielort;
+	}
+
+	public void setZielort(int zielort) {
+		this.zielort = zielort;
 	}
 
 }
