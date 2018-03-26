@@ -5,6 +5,7 @@ import java.util.List;
 
 import javax.ejb.EJB;
 
+import com.fis.model.DetailFlug;
 import com.fis.model.Flug;
 import com.fis.services.FlugDao;
 
@@ -23,7 +24,11 @@ public class FlugController {
 
 	public void updateFlug(PrintWriter pw, String flugNr) { flugDao.updateFlug(pw, flugNr); }
 	
+	public DetailFlug findFlugByIdWithDetails(String flugNr) { return flugDao.findFlugByIdWithDetails(flugNr); }
+	
 	public List<Object[]> listAllFluglinien() { return flugDao.listAllFluglinien(); }
+	
+	public List<Flug> listFlightsByTime(String ersteZeit, String zweiteZeit) { return flugDao.listFlightsByTime(ersteZeit, zweiteZeit); }
 	
 	public Flug generateFlug(PrintWriter pw, String flugnr, String flugzeug, String km, String landezeit, String startzeit) {
 		return flugDao.generateFlug(pw, flugnr, flugzeug, km, landezeit, startzeit);

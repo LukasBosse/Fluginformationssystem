@@ -14,8 +14,9 @@ import java.sql.Timestamp;
 @Entity
 @NamedQuery(name="Flug.findAll", query="SELECT f FROM Flug f")
 public class Flug implements Serializable {
-	private static final long serialVersionUID = 1L;
 	
+	private static final long serialVersionUID = 1L;
+
 	@Id
 	private String flugnr;
 
@@ -35,7 +36,7 @@ public class Flug implements Serializable {
 
 	public Flug() {
 	}
-	
+
 	public String getFlugnr() {
 		return this.flugnr;
 	}
@@ -91,7 +92,7 @@ public class Flug implements Serializable {
 	public void setStartzeit(Time startzeit) {
 		this.startzeit = startzeit;
 	}
-
+	
 	public Timestamp getTimeStamp() {
 		return this.timeStamp;
 	}

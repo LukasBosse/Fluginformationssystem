@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Erstellungszeit: 23. Mrz 2018 um 15:36
+-- Erstellungszeit: 26. Mrz 2018 um 19:17
 -- Server-Version: 10.1.25-MariaDB
 -- PHP-Version: 7.1.7
 
@@ -105,9 +105,9 @@ CREATE TABLE `flug` (
 --
 
 INSERT INTO `flug` (`flugnr`, `flugzeug`, `Startzeit`, `Landezeit`, `flugzeit`, `km`, `timeStamp`, `inklusiveMahlzeit`) VALUES
-('AF123', 2, '00:00:00', '00:00:00', '2.00', 500, '2018-03-19 18:29:48', 1),
-('LH222', 1, '00:00:00', '00:00:00', '8.00', 6000, '2018-03-19 18:29:48', 1),
-('LH412', 2, '00:00:00', '00:00:00', '13.00', 110000, '2018-03-19 18:29:48', 1);
+('AF123', 2, '12:43:00', '14:43:00', '2.00', 500, '2018-03-19 18:29:48', 1),
+('LH222', 1, '10:00:00', '18:00:00', '8.00', 6000, '2018-03-19 18:29:48', 1),
+('LH412', 2, '10:00:00', '23:00:00', '13.00', 110000, '2018-03-19 18:29:48', 1);
 
 -- --------------------------------------------------------
 
@@ -348,7 +348,7 @@ ALTER TABLE `flugzeuge`
 -- AUTO_INCREMENT für Tabelle `users`
 --
 ALTER TABLE `users`
-  MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 --
 -- Constraints der exportierten Tabellen
 --

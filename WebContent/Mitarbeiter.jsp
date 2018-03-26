@@ -3,6 +3,7 @@
 <%@ page import="com.fis.model.User" %>
 <%@ page import="com.fis.model.Flug" %>
 <%@ page import="com.fis.model.Buchung" %>
+<%@ page import="com.fis.de.Statusverwaltung" %>
 <%@ page import="com.fis.controller.BuchungsController" %>
 <%@ page import="com.fis.controller.FlugController" %>
 <%@ page import="com.fis.de.Verification" %>
@@ -26,6 +27,7 @@
 	 <!-- Compiled and minified JavaScript -->
 	 <script type="text/javascript" src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
 	 <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/js/materialize.min.js"></script>
+	 <script src="assets/js/datepicker.js"></script>
 
 	 <title>Fluginformationssystem (FIS) - Mitarbeiteransicht</title>
 	 
@@ -90,33 +92,52 @@
   	<div class="col s6">
   		<div class="card">
   			<div class="card-content">
-  				 <table class="highlight centered">
-		        	<thead>
-			          <tr>
-			          	  <th>ID</th>
-			              <th>Flugnummer</th>
-			              <th>Flugzeit (h)</th>
-			              <th>Inklusive Mahlzeit</th>
-			          </tr>
-		        	</thead>		
-		        	<tbody>
-		        		<%
-		        			int i = 1;
-		        			for(Flug f : flugController.listFlüge()) {
-		        				out.println("<tr>");
-		        				out.println("<td>" + i +"</td>");
-		        				out.println("<td>" + f.getFlugnr() + "</td>");
-		        				out.println("<td>" + f.getFlugzeit() +"</td>");
-			        			out.println("<td><form action='' method='GET'>");
-		        				out.println("<input type='checkbox' name='inklMahlzeit' onChange='this.form.submit();' value='" + f.getFlugnr() + "' id='" + i + "'");
-		        				if(f.getInklusiveMahlzeit()) out.println("checked");
-		        				out.println("/><label for='" + i + "'></label></form></td>");
-		        				out.println("</tr>");
-		        				i++;
-		        			}
-		        		%>
-		        	</tbody>
-	        	</table>
+  				<div class="row">
+  					<form action="" method="GET">
+		  				<div class="input-field col s4">
+					    	<input id="ersteZeit" name="ersteZeit" class="timepicker validate" required/>
+					    	<label for="ersteZeit">Von</label>          			
+					    </div>
+					    <div class="input-field col s4">
+					    	<input id="zweiteZeit" name="zweiteZeit" class="timepicker validate" required/>
+					    	<label for="zweiteZeit">Bis</label>          			
+					    </div>
+		  				<div class="input-field col s2">
+				  			<button class="btn waves-effect waves-light" type="submit" name="submitNewCurrentTime">Suchen</button>
+						</div>
+					</form>	
+				</div>
+				<div class="row">
+	  				<table class="highlight centered col s12">
+			        	<thead>
+				          <tr>
+				              <th>Flugnummer</th>
+				              <th>Flugzeit (h)</th>
+				              <th>Status</th>
+				              <th>Inklusive Mahlzeit</th>
+				          </tr>
+			        	</thead>		
+			        	<tbody>
+			        		<%
+			        	  		if(request.getParameter("submitNewCurrentTime") != null) { 
+			        	  			for(Flug f : flugController.listFlightsByTime(request.getParameter("ersteZeit"), request.getParameter("zweiteZeit"))) {
+			        	  				out.println("<tr>");
+				        				out.println("<td><a href='Details.jsp?flugNr='" + f.getFlugnr() + ">" + f.getFlugnr() +"</td>");
+				        				out.println("<td>" + f.getFlugnr() + "</td>");
+				        				out.println("<td>" + f.getFlugzeit() +"</td>");
+				        				out.println("<td>" + Statusverwaltung.verifyStatus(f) + "</td>");
+					        			out.println("<td><form action='' method='GET'>");
+				        				out.println("<input type='checkbox' name='inklMahlzeit' onChange='this.form.submit();' value='" + f.getFlugnr() + "' id='" + f.getFlugnr() + "'");
+				        				if(f.getInklusiveMahlzeit()) out.println("checked");
+				        				out.println("/><label for='" + f.getFlugnr() + "'></label></form></td>");
+				        				out.println("</tr>");
+			        	  			}
+			        	
+			        	  		}
+			        		%>
+			        	</tbody>
+		        	</table>
+	        	</div>
   			</div>
 		</div>
   	</div>

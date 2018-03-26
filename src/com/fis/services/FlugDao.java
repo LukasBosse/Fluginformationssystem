@@ -11,6 +11,7 @@ import java.util.List;
 
 import javax.ejb.Stateless;
 
+import com.fis.model.DetailFlug;
 import com.fis.model.Flug;
 
 @Stateless
@@ -73,7 +74,23 @@ public class FlugDao extends AbstractDao {
 		List<Object[]> obj = entityManager.createNativeQuery("SELECT f.flugnr, flS.Bezeichnung As `Start`, flD.Bezeichnung As `Ziel` FROM `flug` As `f`, fluglinien As `fl` INNER JOIN flughäfen AS `flS` ON flS.ID = fl.Startort INNER JOIN flughäfen As `flD` ON flD.ID = fl.Zielort WHERE f.flugnr = fl.Fluglinie").getResultList();
 		return obj;
 	}
+	
+	public DetailFlug findFlugByIdWithDetails(String flugNr) {
+		query = entityManager.createNativeQuery("SELECT f.flugnr, flS.Bezeichnung As `Start`, flD.Bezeichnung As `Ziel`, f.Startzeit, f.Landezeit, f.flugzeit, f.km, f.inklusiveMahlzeit FROM `flug` As `f`, fluglinien As `fl` INNER JOIN flughäfen AS `flS` ON flS.ID = fl.Startort INNER JOIN flughäfen As `flD` ON flD.ID = fl.Zielort INNER JOIN flugzeuge As `fZ` ON fZ.id = f.flugzeug WHERE f.flugnr = fl.Fluglinie AND f.flugnr = :flugnr");
+		query.setParameter("flugNr", flugNr);
+		return (DetailFlug) query.getSingleResult();
+	}
 
+	@SuppressWarnings("unchecked")
+	public List<Flug> listFlightsByTime(String ersteZeit, String zweiteZeit) {
+		Time first = timeFormatter(ersteZeit);
+		Time second = timeFormatter(zweiteZeit);
+		query = entityManager.createQuery("SELECT f from Flug f WHERE f.startzeit Between :first  AND :second", Flug.class);
+		query.setParameter("first", first);
+		query.setParameter("second", second);
+		return query.getResultList();
+	}
+	
 	
 	public Date dateFormatter(String time) {
 		DateFormat format = new SimpleDateFormat("dd-mm-YYYY");

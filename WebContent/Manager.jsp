@@ -27,28 +27,7 @@
 	 <!-- Compiled and minified JavaScript -->
 	 <script type="text/javascript" src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
 	 <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/js/materialize.min.js"></script>
-  
-	 <script>
-		 $(document).ready(function() {
-			   $('select').material_select();
-			   $('.timepicker').pickatime({
-			    default: 'now', 
-			    fromnow: 0,      
-			    twelvehour: false,
-			    donetext: 'OK',
-		        format: "HH:ii:SS",
-		        cleartext: 'Clear',
-			    canceltext: 'Cancel',
-			    autoclose: false,
-			    ampmclickable: true,
-			    aftershow: function(){}
-			  });
-		 });
-	    $('.timepicker').on('change', function() {
-	        let receivedVal = $(this).val();
-	        $(this).val(receivedVal + ":00");
-	    });
-	 </script>
+  	 <script src="assets/js/datepicker.js"></script>
 
 	 <title>Fluginformationssystem (FIS) - Manageransicht</title>
 	 
