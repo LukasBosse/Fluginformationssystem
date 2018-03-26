@@ -30,7 +30,7 @@ public class Verification {
 	
 	public void login(String username, String password, HttpSession session, HttpServletRequest request, HttpServletResponse response) {
 		User user = userController.findUser(username);
-		if(user.getPasswort().equals(toMD5(password))) {
+		if(user != null && user.getPasswort().equals(toMD5(password))) {
 			session.setAttribute("user", user);
 			try {
 				response.sendRedirect(user.getType() + ".jsp");
