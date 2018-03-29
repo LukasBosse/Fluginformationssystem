@@ -85,7 +85,7 @@
 						</div>
 				</form>
 				<div class="input-field col">
-					<a href="Main.jsp"><button type="button"
+					<a href="MainLogin.xhtml"><button type="button"
 							class="btn waves-effect waves-light">Zum Login</button></a>
 				</div>
 			</div>
