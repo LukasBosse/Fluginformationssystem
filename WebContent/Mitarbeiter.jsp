@@ -7,7 +7,8 @@
 <%@ page import="com.fis.controller.BuchungsController" %>
 <%@ page import="com.fis.controller.FlugController" %>
 <%@ page import="com.fis.de.Verification" %>
-<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ page contentType="text/html; charset=UTF-8" %>
+<%@ page language="java" %>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
@@ -28,6 +29,7 @@
 	 <script type="text/javascript" src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
 	 <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/js/materialize.min.js"></script>
 	 <script src="assets/js/datepicker.js"></script>
+	 <script src="assets/js/DetailLoader.js"></script>
 
 	 <title>Fluginformationssystem (FIS) - Mitarbeiteransicht</title>
 	 
@@ -93,7 +95,7 @@
   		<div class="card">
   			<div class="card-content">
   				<div class="row">
-  					<form action="" method="GET">
+  					<form action="Mitarbeiter.jsp" method="GET">
 		  				<div class="input-field col s4">
 					    	<input id="ersteZeit" name="ersteZeit" class="timepicker validate" required/>
 					    	<label for="ersteZeit">Von</label>          			
@@ -122,8 +124,7 @@
 			        	  		if(request.getParameter("submitNewCurrentTime") != null) { 
 			        	  			for(Flug f : flugController.listFlightsByTime(request.getParameter("ersteZeit"), request.getParameter("zweiteZeit"))) {
 			        	  				out.println("<tr>");
-				        				out.println("<td><a href='Details.jsp?flugNr='" + f.getFlugnr() + ">" + f.getFlugnr() +"</td>");
-				        				out.println("<td>" + f.getFlugnr() + "</td>");
+				        				out.println("<td><a href='#' onclick='loadDetailsByID(this)'>" + f.getFlugnr() + "</a></td>");
 				        				out.println("<td>" + f.getFlugzeit() +"</td>");
 				        				out.println("<td>" + Statusverwaltung.verifyStatus(f) + "</td>");
 					        			out.println("<td><form action='' method='GET'>");
@@ -142,13 +143,36 @@
 		</div>
   	</div>
   </div>
+  
+  <div class="row">
+  		<div class="col s12">
+	  		<div class="card">
+	 			<div class="card-content">
+	 				 <table class="highlight centered">
+		        		<thead>
+				          <tr>
+				              <th>Flugnr</th>
+				              <th>Flugzeug</th>
+				              <th>Startort</th>
+				              <th>Landeort</th>
+				              <th>Startzeit</th>
+				              <th>Landezeit</th>
+				              <th>Flugdauer</th>
+				              <th>Distanz</th>
+				          </tr>
+		        		</thead>		
+			        	<tbody id="flugDetails">
+			        	</tbody>
+	        		</table>
+	        	</div>
+	    	</div>
+    	</div>
+  </div>
 
   
   <!-- Compiled and minified JavaScript -->
-  <script type="text/javascript" src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/js/materialize.min.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script> 
-
 
 </body>
 </html>

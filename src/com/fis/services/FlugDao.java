@@ -10,6 +10,7 @@ import java.util.Date;
 import java.util.List;
 
 import javax.ejb.Stateless;
+import javax.persistence.NoResultException;
 
 import com.fis.model.DetailFlug;
 import com.fis.model.Flug;
@@ -75,10 +76,19 @@ public class FlugDao extends AbstractDao {
 		return obj;
 	}
 	
+	@SuppressWarnings("unchecked")
 	public DetailFlug findFlugByIdWithDetails(String flugNr) {
-		query = entityManager.createNativeQuery("SELECT f.flugnr, flS.Bezeichnung As `Start`, flD.Bezeichnung As `Ziel`, f.Startzeit, f.Landezeit, f.flugzeit, f.km, f.inklusiveMahlzeit FROM `flug` As `f`, fluglinien As `fl` INNER JOIN flughäfen AS `flS` ON flS.ID = fl.Startort INNER JOIN flughäfen As `flD` ON flD.ID = fl.Zielort INNER JOIN flugzeuge As `fZ` ON fZ.id = f.flugzeug WHERE f.flugnr = fl.Fluglinie AND f.flugnr = :flugnr");
-		query.setParameter("flugNr", flugNr);
-		return (DetailFlug) query.getSingleResult();
+		query = entityManager.createNativeQuery("SELECT f.flugnr , fZ.hersteller, fZ.type, flS.Bezeichnung As `Start`, flD.Bezeichnung As `Ziel`, f.Startzeit, f.Landezeit, f.flugzeit, f.km, f.inklusiveMahlzeit FROM `flug` As `f`, flugzeuge As `fZ`, fluglinien As `fl` INNER JOIN flughäfen AS `flS` ON flS.ID = fl.Startort INNER JOIN flughäfen As `flD` ON flD.ID = fl.Zielort WHERE fZ.id = f.flugzeug AND f.flugnr = fl.Fluglinie AND f.flugnr = ?1");
+		query.setParameter(1, flugNr);
+		try {
+			List<Object[]> objs = query.getResultList();
+			Object[] obj = objs.get(0);
+			DetailFlug dF = new DetailFlug(obj[0].toString(),BigDecimal.valueOf(Double.parseDouble(obj[7].toString())),obj[1].toString(),obj[2].toString(),obj[3].toString(),obj[4].toString(),Boolean.getBoolean(obj[9].toString()),Integer.parseInt(obj[8].toString()),timeFormatter(obj[6].toString()),timeFormatter(obj[5].toString()));
+			return dF;
+		} catch (NoResultException ex) {
+			ex.printStackTrace();
+		}
+		return null;
 	}
 
 	@SuppressWarnings("unchecked")

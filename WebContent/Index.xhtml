@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	  xmlns:h="http://java.sun.com/jsf/html"
+	  xmlns:f="http://java.sun.com/jsf/core"
+	  xmlns:ui="http://java.sun.com/jsf/facelets">
+<h:head>
+	
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"/>
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"/>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/css/materialize.min.css"/>
+<link rel="stylesheet" href="assets/css/main.css"/>
+
+<title>Fluginformationssystem (FIS)</title>
+</h:head>
+<h:body>
+<div class="row" style="margin-top: 100px;">
+
+		<div class="col s4"></div>
+
+		<div class="col s4">
+
+			<div class="card-panel" style="padding-bottom: 5px;">
+				<h:form method="post">
+			
+					<div class="row">
+						<div class="input-field col m11">
+							<i class="material-icons prefix">account_circle</i> 
+							<h:inputText type="text" id="username" value="#{verification.username}" class="validate" required="true"/>
+							<label for="username">Zugangsname</label>
+						</div>
+					</div>
+			
+					<div class="row">
+						<div class="input-field col m11">
+							<i class="material-icons prefix">account_circle</i> 
+							<h:inputSecret type="text" id="passwort" value="#{verification.password}" class="validate" required="true"/>
+							<label for="passwort">Passwort</label>
+						</div>
+					</div>
+	 		
+   					<div class="row">
+						<div class="input-field col">
+							 <h:commandButton class="btn waves-effect waves-light" id="submit" value="Login" action="#{verification.doLogin()}"/>
+						</div>
+            			<div class="input-field col">
+							<a href="Registrierung.jsp">
+								<button type="button" class="btn waves-effect waves-light">Registrierung</button>
+							</a>
+						</div>
+					</div>
+				</h:form>
+			</div>
+		</div>
+		<div class="col s4"></div>
+	</div>
+	
+	<script type="text/javascript" src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+	<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/js/materialize.min.js"></script>
+	<script type="text/javascript" src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+	
+</h:body>
+</html>

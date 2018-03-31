@@ -12,6 +12,7 @@ public class Statusverwaltung {
 
 	public static String verifyStatus(Flug flug) {
 		String randomStatus = generateRandomStatus();
+		String status = "<span class='new badge red' style='margin-left: 0 !important;float: none !important;' data-badge-caption=''>N/A</span>";
 		if(!randomStatus.isEmpty()) {
 			return randomStatus;
 		}
@@ -27,24 +28,24 @@ public class Statusverwaltung {
 			e.printStackTrace();
 		}
 		if(dateDepartureTime.getTime() > dateCurrentTime.getTime()) {
-			return "Scheduled";
+			status = "<span class='new badge green' style='margin-left: 0 !important;float: none !important;' data-badge-caption=''>Scheduled</span>";
 		} else if(dateDepartureTime.getTime() < dateCurrentTime.getTime()) {
 			if(dateCurrentTime.getTime() - dateDepartureTime.getTime() <= 21600000) {
-				return "Landed";
+				status = "<span class='new badge green' style='margin-left: 0 !important;float: none !important;' data-badge-caption=''>Landed</span>";
 			} else {
-				return "Departured";
+				status = "<span class='new badge green' style='margin-left: 0 !important;float: none !important;' data-badge-caption=''>Departured</span>";
 			}
 		}
-		return "N/A";
+		return status;
 	}
 	
 	private static String generateRandomStatus() {
 		Random rand = new Random();
 	    int randomNum = rand.nextInt(10);
 	    if(randomNum == 0) {
-	    	return "Delayed";
+	    	return "<span class='new badge orange' style='margin-left: 0 !important;float: none !important;' data-badge-caption=''>Delayed</span>";
 	    } else if(randomNum == 2) {
-	    	return "Canceled";
+	    	return "<span class='new badge red' style='margin-left: 0 !important;float: none !important;' data-badge-caption=''>Canceled</span>";
 	    }
 	    return "";
 	}

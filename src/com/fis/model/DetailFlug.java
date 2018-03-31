@@ -26,7 +26,7 @@ public class DetailFlug implements Serializable {
 	private boolean inklusiveMahlzeit;
 
 	private int km;
-
+	
 	private Time landezeit;
 
 	private Time startzeit;
@@ -36,10 +36,10 @@ public class DetailFlug implements Serializable {
 		super();
 		this.flugnr = flugnr;
 		this.flugzeit = flugzeit;
-		this.hersteller = hersteller;
-		this.type = type;
-		this.startOrt = startOrt;
-		this.landeOrt = landeOrt;
+		this.setHersteller(hersteller);
+		this.setType(type);
+		this.setStartOrt(startOrt);
+		this.setLandeOrt(landeOrt);
 		this.inklusiveMahlzeit = inklusiveMahlzeit;
 		this.km = km;
 		this.landezeit = landezeit;
@@ -92,6 +92,38 @@ public class DetailFlug implements Serializable {
 
 	public void setStartzeit(Time startzeit) {
 		this.startzeit = startzeit;
+	}
+
+	public String getHersteller() {
+		return hersteller;
+	}
+
+	public void setHersteller(String hersteller) {
+		this.hersteller = hersteller;
+	}
+
+	public String getType() {
+		return type;
+	}
+
+	public void setType(String type) {
+		this.type = type;
+	}
+
+	public String getStartOrt() {
+		return startOrt;
+	}
+
+	public void setStartOrt(String startOrt) {
+		this.startOrt = startOrt;
+	}
+
+	public String getLandeOrt() {
+		return landeOrt;
+	}
+
+	public void setLandeOrt(String landeOrt) {
+		this.landeOrt = landeOrt;
 	}
 
 }
