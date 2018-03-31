@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Erstellungszeit: 26. Mrz 2018 um 19:17
+-- Erstellungszeit: 31. Mrz 2018 um 19:20
 -- Server-Version: 10.1.25-MariaDB
 -- PHP-Version: 7.1.7
 
@@ -105,9 +105,9 @@ CREATE TABLE `flug` (
 --
 
 INSERT INTO `flug` (`flugnr`, `flugzeug`, `Startzeit`, `Landezeit`, `flugzeit`, `km`, `timeStamp`, `inklusiveMahlzeit`) VALUES
-('AF123', 2, '12:43:00', '14:43:00', '2.00', 500, '2018-03-19 18:29:48', 1),
-('LH222', 1, '10:00:00', '18:00:00', '8.00', 6000, '2018-03-19 18:29:48', 1),
-('LH412', 2, '10:00:00', '23:00:00', '13.00', 110000, '2018-03-19 18:29:48', 1);
+('AF123', 5, '12:43:00', '14:43:00', '2.00', 500, '2018-03-19 18:29:48', 1),
+('LH222', 9, '10:00:00', '18:00:00', '8.00', 6000, '2018-03-19 18:29:48', 1),
+('LH412', 11, '10:00:00', '23:00:00', '13.00', 110000, '2018-03-19 18:29:48', 1);
 
 -- --------------------------------------------------------
 
@@ -203,7 +203,7 @@ CREATE TABLE `flugzeuge` (
 --
 
 INSERT INTO `flugzeuge` (`id`, `hersteller`, `type`, `sitze`, `fluglinie`, `fluggesellschaft`) VALUES
-(5, 'Boeing', '747', 450, 'AF123', 8),
+(5, 'Boeing', '747', 450, 'LH412', 8),
 (9, 'Boeing', '797', 300, 'LH412', 4),
 (11, 'Boeing', '747', 300, 'LH412', 10);
 
