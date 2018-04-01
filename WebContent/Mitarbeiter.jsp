@@ -1,11 +1,13 @@
 <%@ page import="javax.servlet.http.HttpServletRequest" %>
 <%@ page import="com.fis.de.Redirection" %>
-<%@ page import="com.fis.model.User" %>
-<%@ page import="com.fis.model.Flug" %>
-<%@ page import="com.fis.model.Buchung" %>
+<%@ page import="com.fis.dto.User" %>
+<%@ page import="com.fis.dto.Flug" %>
+<%@ page import="com.fis.dto.Passagier" %>
+<%@ page import="com.fis.dto.Buchung" %>
 <%@ page import="com.fis.de.Statusverwaltung" %>
 <%@ page import="com.fis.controller.BuchungsController" %>
 <%@ page import="com.fis.controller.FlugController" %>
+<%@ page import="com.fis.controller.PassagierController" %>
 <%@ page import="com.fis.de.Verification" %>
 <%@ page contentType="text/html; charset=UTF-8" %>
 <%@ page language="java" %>
@@ -21,15 +23,13 @@
 	 <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 	 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
 	 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/css/materialize.min.css">
-	 <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
   	 <link rel="stylesheet" href="assets/css/main.css">
-
 
 	 <!-- Compiled and minified JavaScript -->
 	 <script type="text/javascript" src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
 	 <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/js/materialize.min.js"></script>
-	 <script src="assets/js/datepicker.js"></script>
-	 <script src="assets/js/DetailLoader.js"></script>
+  	 <script src="assets/js/Datepicker.js"></script>
+	 <script type="text/javascript" src="assets/js/DetailLoader.js"></script>
 
 	 <title>Fluginformationssystem (FIS) - Mitarbeiteransicht</title>
 	 
@@ -41,6 +41,7 @@
   	new Redirection().checkDirection(session, response, "Mitarbeiter");
   	BuchungsController buchungsController = new BuchungsController();
   	FlugController flugController = new FlugController();
+  	PassagierController passagierController = new PassagierController();
   	
   	if(request.getParameter("bestaetigt") != null) { buchungsController.updateBuchung(response.getWriter(), Integer.parseInt(request.getParameter("bestaetigt"))); }
   	if(request.getParameter("inklMahlzeit") != null) { flugController.updateFlug(response.getWriter(),request.getParameter("inklMahlzeit")); }
@@ -51,7 +52,7 @@
     <div class="nav-wrapper">
       <ul class="right"><li><a href="Logout.jsp" class="logoutBtn"><i class="material-icons">exit_to_app</i></a></li></ul>
       <ul id="nav-mobile" class="left hide-on-med-and-down">
-        <li class="active"><a href="Manager.jsp"><i class="material-icons left">flight_takeoff</i> Flüge</a></li>
+        <li class="active"><a href="Mitarbeiter.jsp"><i class="material-icons left">flight_takeoff</i> Flüge</a></li>
         <li><a href="Buchungen.jsp"><i class="material-icons left">border_color</i> Buchungen</a></li>
         <li><a href="Passagiere.jsp"><i class="material-icons left">person</i> Passagiere</a></li>
       </ul>
@@ -159,6 +160,7 @@
 				              <th>Landezeit</th>
 				              <th>Flugdauer</th>
 				              <th>Distanz</th>
+				              <th>Aktion</th>
 				          </tr>
 		        		</thead>		
 			        	<tbody id="flugDetails">
@@ -168,11 +170,7 @@
 	    	</div>
     	</div>
   </div>
-
   
-  <!-- Compiled and minified JavaScript -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/js/materialize.min.js"></script>
-  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script> 
 
 </body>
 </html>

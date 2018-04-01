@@ -1,10 +1,10 @@
 <%@ page import="java.util.List" %>
 <%@ page import="javax.servlet.http.HttpServletRequest"%>
 <%@ page import="com.fis.de.Redirection"%>
-<%@ page import="com.fis.model.User" %>
-<%@ page import="com.fis.model.Flug" %>
-<%@ page import="com.fis.model.Buchung" %>
-<%@ page import="com.fis.model.Passagier" %>
+<%@ page import="com.fis.dto.User" %>
+<%@ page import="com.fis.dto.Flug" %>
+<%@ page import="com.fis.dto.Buchung" %>
+<%@ page import="com.fis.dto.Passagier" %>
 <%@ page import="com.fis.controller.FlugController" %>
 <%@ page import="com.fis.controller.BuchungsController" %>
 <%@ page import="com.fis.controller.PassagierController" %>
@@ -25,8 +25,6 @@
 	href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
 <link rel="stylesheet"
 	href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/css/materialize.min.css">
-<link href="https://fonts.googleapis.com/icon?family=Material+Icons"
-	rel="stylesheet">
 <link rel="stylesheet" href="assets/css/main.css">
 
 
@@ -52,6 +50,12 @@
 	FlugController flugController = new FlugController();
 	BuchungsController buchungsController = new BuchungsController();
 	PassagierController passagierController = new PassagierController();
+	
+	if(request.getParameter("flugnummerAddBuchung") != null && request.getParameter("passagierName") != null) {
+		Passagier p = passagierController.findPassagier(request.getParameter("passagierName"));
+		buchungsController.addBuchung(response.getWriter(), p, request.getParameter("flugnummerAddBuchung")); 
+	}
+	
 	%>
 
 	<nav>
@@ -61,7 +65,7 @@
 					class="material-icons">exit_to_app</i></a></li>
 		</ul>
 		<ul id="nav-mobile" class="left hide-on-med-and-down">
-			<li><a href="Manager.jsp"><i class="material-icons left">flight_takeoff</i>
+			<li><a href="Mitarbeiter.jsp"><i class="material-icons left">flight_takeoff</i>
 					Flüge</a></li>
 			<li class="active"><a href="Buchungen.jsp"><i
 					class="material-icons left">border_color</i> Buchungen</a></li>
@@ -192,8 +196,48 @@
 				</div>
 			</div>
 		</div>
-
 	</div>
+	
+	<%
+	
+	if(request.getParameter("flugNr") != null) {
+	
+	out.println("<div class='row'>" +
+		"<div class='col s12'>" +
+			"<div class='card'>" +
+				"<div class='card-content'>" +
+				    "<span class='card-title'>Flugbuchung</span>" +
+					"<div class='row'>" +
+						"<form method='GET'>" +
+						"<div class='input-field col s8'>" +
+							"<select id='passagierName' name='passagierName'>" +
+								"<option disabled selected value>-- Bitte wählen Sie einen Passagier aus --</option>");
+							
+								for(Passagier p : passagierController.listPassagier()) {
+									out.println("<option value='" + p.getName() + "'>" + p.getName() + "</option>");
+								}
+							
+							out.println("</select>" +
+							"<label for='passagierName'>Passagier</label>" +
+						"</div>" +
+						"<div class='input-field col s4'>" +
+							"<input type='text' id='flugNr' name='flugnummerAddBuchung' value='" + request.getParameter("flugNr") + "'>" +
+							"<label for='flugNr'>Flugnummer</label>" +
+						"</div>" +
+					"</div>" +
+					"<div class='row'>" +
+						"<div class='input-field col s12'>" +
+							"<button class='btn waves-effect waves-light' type='submit' name='addBuchung'>Buchen</button>" +
+						"</div>" +
+					"</div></form>" +
+				"</div>" +
+			"</div>" +
+		"</div>" +
+	"</div>");
+	
+	}
+	
+	%>
 
 </body>
 </html>

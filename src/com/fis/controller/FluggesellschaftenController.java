@@ -1,19 +1,32 @@
+/*
+ * Project: Fluginformationssystem
+ * Author: Lukas Bosse, Torben Kuhnke, Malte Peters (WI 47/15)
+ */
+
 package com.fis.controller;
 
 import java.util.List;
 
 import javax.ejb.EJB;
 
-import com.fis.model.Fluggesellschaften;
-import com.fis.services.FluggesellschaftenDao;
+import com.fis.dao.FluggesellschaftenDao;
+import com.fis.dto.Fluggesellschaften;
+import com.fis.impl.FluggesellschaftenDaoImpl;
 
-public class FluggesellschaftenController {
+/**
+ * Klasse: FluggesellschaftenController
+ * Beschreibung: Abstraktionsschicht des FluggesellschaftenDao.
+ */
+
+public class FluggesellschaftenController implements FluggesellschaftenDao {
 
 	@EJB
-	private FluggesellschaftenDao fluggesellschaftenDao;
+	private FluggesellschaftenDaoImpl fluggesellschaftenDao;
 	
-	public FluggesellschaftenController() { this.fluggesellschaftenDao = new FluggesellschaftenDao(); }
+	/** Constructor **/
+	public FluggesellschaftenController() { this.fluggesellschaftenDao = new FluggesellschaftenDaoImpl(); }
 	
+	/** Abstraktionsmethode der FluggesellschaftenDao-Methode 'listAllFlugzeuge'. **/
 	public List<Fluggesellschaften> listAllFlugzeuge() { return fluggesellschaftenDao.listAllFlugzeuge(); }
 	
 }

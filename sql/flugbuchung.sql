@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Erstellungszeit: 31. Mrz 2018 um 19:20
+-- Erstellungszeit: 01. Apr 2018 um 23:07
 -- Server-Version: 10.1.25-MariaDB
 -- PHP-Version: 7.1.7
 
@@ -72,16 +72,14 @@ CREATE TABLE `buchung` (
 --
 
 INSERT INTO `buchung` (`ID`, `name`, `geschlecht`, `ort`, `flugnr`, `tag`, `preis`, `bestaetigt`) VALUES
-(2, 'Maier', 0, 'München', 'LH222', '2012-10-01', '500', 1),
-(3, 'Maier', 0, 'München', 'LH222', '2012-10-15', '250', 0),
-(4, 'Weber', 0, 'Darmstadt', 'LH222', '2012-10-08', '1100', 1),
-(5, 'Weber', 0, 'Darmstadt', 'LH222', '2012-10-15', '600', 1),
-(6, 'Lux', 0, 'Frankfurt', 'LH222', '2012-10-08', '950', 0),
-(7, 'Lux', 0, 'Frankfurt', 'AF123', '2012-10-13', '300', 1),
-(8, 'Lux', 0, 'Frankfurt', 'AF123', '2012-10-06', '300', 1),
-(9, 'Weber', 0, 'Darmstadt', 'AF123', '2012-10-06', '1100', 0),
-(10, 'Weber', 0, 'Darmstadt', 'AF123', '2012-10-13', '80', 1),
-(11, 'Lux', 0, 'Frankfurt', 'AF123', '2012-10-15', '200', 1);
+(2, 'Maier', 0, 'München', 'LH222', '2018-04-01', '500', 1),
+(4, 'Weber', 0, 'Darmstadt', 'LH222', '2018-04-01', '1100', 1),
+(6, 'Lux', 0, 'Frankfurt', 'LH222', '2018-04-01', '950', 0),
+(7, 'Lux', 0, 'Frankfurt', 'AF123', '2018-04-01', '300', 1),
+(9, 'Weber', 0, 'Darmstadt', 'AF123', '2018-04-01', '1100', 1),
+(13, 'Bosse', 0, 'Hannover', 'AL123', '2018-04-01', '1000', 0),
+(14, 'Willi', 0, 'DA', 'AF123', '2018-04-01', '1000', 0),
+(15, 'Mustermann', 0, 'Musterstadt', 'AF123', '2018-04-01', '1', 0);
 
 -- --------------------------------------------------------
 
@@ -92,6 +90,7 @@ INSERT INTO `buchung` (`ID`, `name`, `geschlecht`, `ort`, `flugnr`, `tag`, `prei
 CREATE TABLE `flug` (
   `flugnr` varchar(12) NOT NULL,
   `flugzeug` int(11) NOT NULL,
+  `Flugdatum` date NOT NULL,
   `Startzeit` time NOT NULL,
   `Landezeit` time NOT NULL,
   `flugzeit` decimal(10,2) DEFAULT NULL,
@@ -104,10 +103,12 @@ CREATE TABLE `flug` (
 -- Daten für Tabelle `flug`
 --
 
-INSERT INTO `flug` (`flugnr`, `flugzeug`, `Startzeit`, `Landezeit`, `flugzeit`, `km`, `timeStamp`, `inklusiveMahlzeit`) VALUES
-('AF123', 5, '12:43:00', '14:43:00', '2.00', 500, '2018-03-19 18:29:48', 1),
-('LH222', 9, '10:00:00', '18:00:00', '8.00', 6000, '2018-03-19 18:29:48', 1),
-('LH412', 11, '10:00:00', '23:00:00', '13.00', 110000, '2018-03-19 18:29:48', 1);
+INSERT INTO `flug` (`flugnr`, `flugzeug`, `Flugdatum`, `Startzeit`, `Landezeit`, `flugzeit`, `km`, `timeStamp`, `inklusiveMahlzeit`) VALUES
+('AF123', 5, '2018-04-01', '12:43:00', '14:43:00', '2.00', 500, '2018-03-19 18:29:48', 1),
+('KN394', 9, '2018-04-01', '22:43:00', '23:43:00', '1.00', 500, '2018-04-01 20:43:39', 0),
+('LH222', 9, '2018-04-01', '10:00:00', '18:00:00', '8.00', 6000, '2018-03-19 18:29:48', 1),
+('LH412', 11, '2018-04-01', '10:00:00', '23:00:00', '13.00', 110000, '2018-03-19 18:29:48', 1),
+('MK345', 11, '2018-04-01', '10:00:00', '11:00:00', '1.00', 300, '2018-03-31 21:15:14', 0);
 
 -- --------------------------------------------------------
 
@@ -180,8 +181,10 @@ CREATE TABLE `fluglinien` (
 
 INSERT INTO `fluglinien` (`Fluglinie`, `Startort`, `Zielort`) VALUES
 ('AF123', 2, 4),
+('KN394', 10, 12),
 ('LH222', 3, 2),
-('LH412', 1, 4);
+('LH412', 1, 4),
+('MK345', 10, 2);
 
 -- --------------------------------------------------------
 
@@ -203,9 +206,10 @@ CREATE TABLE `flugzeuge` (
 --
 
 INSERT INTO `flugzeuge` (`id`, `hersteller`, `type`, `sitze`, `fluglinie`, `fluggesellschaft`) VALUES
-(5, 'Boeing', '747', 450, 'LH412', 8),
+(5, 'Boeing', '747', 450, 'AF123', 8),
 (9, 'Boeing', '797', 300, 'LH412', 4),
-(11, 'Boeing', '747', 300, 'LH412', 10);
+(11, 'Boeing', '747', 300, 'LH412', 10),
+(12, 'Boeing', '848', 200, 'AF123', 9);
 
 -- --------------------------------------------------------
 
@@ -268,9 +272,7 @@ ALTER TABLE `abflug`
 -- Indizes für die Tabelle `buchung`
 --
 ALTER TABLE `buchung`
-  ADD PRIMARY KEY (`ID`),
-  ADD KEY `fk_abflug_tag` (`flugnr`,`tag`),
-  ADD KEY `fk_passagier_name_ort` (`name`,`ort`);
+  ADD PRIMARY KEY (`ID`);
 
 --
 -- Indizes für die Tabelle `flug`
@@ -328,7 +330,7 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT für Tabelle `buchung`
 --
 ALTER TABLE `buchung`
-  MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
+  MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
 --
 -- AUTO_INCREMENT für Tabelle `fluggesellschaften`
 --
@@ -338,17 +340,17 @@ ALTER TABLE `fluggesellschaften`
 -- AUTO_INCREMENT für Tabelle `flughäfen`
 --
 ALTER TABLE `flughäfen`
-  MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
+  MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
 --
 -- AUTO_INCREMENT für Tabelle `flugzeuge`
 --
 ALTER TABLE `flugzeuge`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
 --
 -- AUTO_INCREMENT für Tabelle `users`
 --
 ALTER TABLE `users`
-  MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 --
 -- Constraints der exportierten Tabellen
 --
@@ -358,13 +360,6 @@ ALTER TABLE `users`
 --
 ALTER TABLE `abflug`
   ADD CONSTRAINT `fk_flug_flugnr` FOREIGN KEY (`flugnr`) REFERENCES `flug` (`flugnr`);
-
---
--- Constraints der Tabelle `buchung`
---
-ALTER TABLE `buchung`
-  ADD CONSTRAINT `fk_abflug_tag` FOREIGN KEY (`flugnr`,`tag`) REFERENCES `abflug` (`flugnr`, `tag`),
-  ADD CONSTRAINT `fk_passagier_name_ort` FOREIGN KEY (`name`,`ort`) REFERENCES `passagier` (`name`, `ort`);
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

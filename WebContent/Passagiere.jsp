@@ -1,7 +1,7 @@
 <%@ page import="javax.servlet.http.HttpServletRequest" %>
 <%@ page import="com.fis.de.Redirection" %>
-<%@ page import="com.fis.model.User" %>
-<%@ page import="com.fis.model.Passagier" %>
+<%@ page import="com.fis.dto.User" %>
+<%@ page import="com.fis.dto.Passagier" %>
 <%@ page import="com.fis.controller.PassagierController" %>
 <%@ page import="com.fis.de.Verification" %>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
@@ -46,7 +46,7 @@
     <div class="nav-wrapper">
       <ul class="right"><li><a href="Logout.jsp" class="logoutBtn"><i class="material-icons">exit_to_app</i></a></li></ul>
       <ul id="nav-mobile" class="left hide-on-med-and-down">
-        <li><a href="Manager.jsp"><i class="material-icons left">flight_takeoff</i> Flüge</a></li>
+        <li><a href="Mitarbeiter.jsp"><i class="material-icons left">flight_takeoff</i> Flüge</a></li>
         <li><a href="Buchungen.jsp"><i class="material-icons left">border_color</i> Buchungen</a></li>
         <li class="active"><a href="Passagiere.jsp"><i class="material-icons left">person</i> Passagiere</a></li>
       </ul>

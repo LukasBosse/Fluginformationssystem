@@ -34,7 +34,7 @@
 
 	<% 
 	if(request.getParameter("register") != null) {
-		Verification verification = new Verification(response.getWriter());
+		Verification verification = new Verification();
 		verification.register(response.getWriter(), request.getParameter("username"), request.getParameter("userType"), request.getParameter("passwort"));
 	}
 %>
@@ -85,7 +85,7 @@
 						</div>
 				</form>
 				<div class="input-field col">
-					<a href="Index.xhtml"><button type="button"
+					<a href="Index.faces"><button type="button"
 							class="btn waves-effect waves-light">Zum Login</button></a>
 				</div>
 			</div>

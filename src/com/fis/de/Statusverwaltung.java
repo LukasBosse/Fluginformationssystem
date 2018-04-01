@@ -1,3 +1,8 @@
+/*
+ * Project: Fluginformationssystem
+ * Author: Lukas Bosse, Torben Kuhnke, Malte Peters (WI 47/15)
+ */
+
 package com.fis.de;
 
 import java.sql.Time;
@@ -6,10 +11,23 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Random;
 
-import com.fis.model.Flug;
+import javax.ejb.Stateless;
 
+import com.fis.dto.Flug;
+
+/**
+ * Klasse: Statusverwaltung
+ * Beschreibung: Überprüfung und Ausgabe des jeweiligen Status eines Fluges.
+ */
+
+@Stateless
 public class Statusverwaltung {
 
+	/**
+	 * Überprüfung und Ausgabe des jeweiligen Status eines Fluges.
+	 * @param flug
+	 * @return
+	 */
 	public static String verifyStatus(Flug flug) {
 		String randomStatus = generateRandomStatus();
 		String status = "<span class='new badge red' style='margin-left: 0 !important;float: none !important;' data-badge-caption=''>N/A</span>";
@@ -39,6 +57,10 @@ public class Statusverwaltung {
 		return status;
 	}
 	
+	/**
+	 * Generierung eines zufälligen Status.
+	 * @return
+	 */
 	private static String generateRandomStatus() {
 		Random rand = new Random();
 	    int randomNum = rand.nextInt(10);

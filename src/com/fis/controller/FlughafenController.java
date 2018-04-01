@@ -1,3 +1,8 @@
+/*
+ * Project: Fluginformationssystem
+ * Author: Lukas Bosse, Torben Kuhnke, Malte Peters (WI 47/15)
+ */
+
 package com.fis.controller;
 
 import java.io.PrintWriter;
@@ -5,18 +10,27 @@ import java.util.List;
 
 import javax.ejb.EJB;
 
-import com.fis.model.Flughäfen;
-import com.fis.services.FlughafenDao;
+import com.fis.dao.FlughafenDao;
+import com.fis.dto.Flughäfen;
+import com.fis.impl.FlughafenDaoImpl;
 
-public class FlughafenController {
+/**
+ * Klasse: FlughafenController
+ * Beschreibung: Abstraktionsschicht des FlughafenDao.
+ */
+
+public class FlughafenController implements FlughafenDao {
 	
 	@EJB
-	private FlughafenDao flughafenDao;
+	private FlughafenDaoImpl flughafenDao;
 	
-	public FlughafenController() { this.flughafenDao = new FlughafenDao(); }
+	/** Constructor **/
+	public FlughafenController() { this.flughafenDao = new FlughafenDaoImpl(); }
 
+	/** Abstraktionsmethode der FlughafenDao-Methode 'listAllFlughäfen'. **/
 	public List<Flughäfen>listAllFlughäfen() { return flughafenDao.listAllFlughäfen(); }	
 
+	/** Abstraktionsmethode der FlughafenDao-Methode 'createFlughafen'. **/
 	public void createFlughafen(PrintWriter pw, String bezeichnung) { flughafenDao.createFlughafen(pw, bezeichnung); }
 	
 }

@@ -3,8 +3,8 @@
 <%@ page import="com.fis.de.Redirection" %>
 <%@ page import="com.fis.controller.FlughafenController" %>
 <%@ page import="com.fis.controller.FluglinienController" %>
-<%@ page import="com.fis.model.User" %>
-<%@ page import="com.fis.model.Flughäfen" %>
+<%@ page import="com.fis.dto.User" %>
+<%@ page import="com.fis.dto.Flughäfen" %>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
@@ -17,7 +17,6 @@
 	 <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 	 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
 	 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/css/materialize.min.css">
-	 <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
   	 <link rel="stylesheet" href="assets/css/main.css">
 
 

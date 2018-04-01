@@ -1,3 +1,8 @@
+/*
+ * Project: Fluginformationssystem
+ * Author: Lukas Bosse, Torben Kuhnke, Malte Peters (WI 47/15)
+ */
+
 package com.fis.de;
 
 import java.io.IOException;
@@ -8,7 +13,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.fis.controller.FlugController;
-import com.fis.model.DetailFlug;
+import com.fis.dto.DetailFlug;
 
 /**
  * Servlet implementation class DetailLoader
@@ -42,6 +47,7 @@ public class DetailLoader extends HttpServlet {
 						"<td>" + obj.getLandezeit() + "</td>" +
 						"<td>" + obj.getFlugzeit() + " h</td>" +
 						"<td>" + obj.getKm() + " km</td>" +
+						"<td><a href='Buchungen.jsp?flugNr=" + obj.getFlugnr() + "' class='btn modal-trigger'>Buchen</a></td>" + 
 						"</tr>");
 		} else {
 			response.getWriter().write("<tr><td> - Es konnten keine Informationen zu diesem Flug gefunden werden. - </td></tr>");

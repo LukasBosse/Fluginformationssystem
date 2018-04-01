@@ -1,30 +1,38 @@
+/*
+ * Project: Fluginformationssystem
+ * Author: Lukas Bosse, Torben Kuhnke, Malte Peters (WI 47/15)
+ */
+
 package com.fis.controller;
 
 import java.io.PrintWriter;
 
 import javax.ejb.EJB;
 
-import com.fis.model.User;
-import com.fis.services.UserDao;
+import com.fis.dao.UserDao;
+import com.fis.dto.User;
+import com.fis.impl.UserDaoImpl;
 
-public class UserController {
+/**
+ * Klasse: UserController
+ * Beschreibung: Abstraktionsschicht des UserDao.
+ */
+
+public class UserController implements UserDao {
 	
 	@EJB
-	private UserDao userDao;
+	private UserDaoImpl userDao;
 	
-	public UserController() {
-		userDao = new UserDao();
-	}
+	/** Constructor **/
+	public UserController() { userDao = new UserDaoImpl(); }
 	
-	public User findUser(String username) {
-		return userDao.findUser(username);
-	}
+	/** Abstraktionsmethode der UserDao-Methode 'findUser'. **/
+	public User findUser(String username) { return userDao.findUser(username); }
 	
-	public void create(PrintWriter pw, User user) {
-		userDao.create(pw, user);
-	}
+	/** Abstraktionsmethode der UserDao-Methode 'findUser'. **/
+	public void create(PrintWriter pw, User user) { userDao.create(pw, user); }
 	
-	public UserDao getWriter() { return userDao; } 
-	
+	/** Abstraktionmethode der UserDao-Methode 'writerAlert'. **/
+	public void writeAlert(PrintWriter pw, String title, String message, String type, String position) { userDao.writeAlert(pw, title, message, type, position); } 
 
 }

@@ -4,7 +4,7 @@
 <%@ page import="com.fis.controller.FlugzeugController" %>
 <%@ page import="com.fis.controller.FluggesellschaftenController" %>
 <%@ page import="com.fis.controller.FlugController" %>
-<%@ page import="com.fis.model.*" %>
+<%@ page import="com.fis.dto.*" %>
 <%@ page import="com.fis.de.Verification" %>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
@@ -18,7 +18,6 @@
 	 <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 	 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
 	 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/css/materialize.min.css">
-	 <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
   	 <link rel="stylesheet" href="assets/css/main.css">
 
 

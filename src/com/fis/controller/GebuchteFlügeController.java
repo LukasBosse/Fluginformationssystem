@@ -1,20 +1,32 @@
+/*
+ * Project: Fluginformationssystem
+ * Author: Lukas Bosse, Torben Kuhnke, Malte Peters (WI 47/15)
+ */
+
 package com.fis.controller;
 
 import java.util.List;
 
 import javax.ejb.EJB;
 
-import com.fis.model.GebuchteFlüge;
-import com.fis.services.GebuchteFlügeDao;
+import com.fis.dao.GebuchteFlügeDao;
+import com.fis.dto.GebuchteFlüge;
+import com.fis.impl.GebuchteFlügeDaoImpl;
 
-public class GebuchteFlügeController {
+/**
+ * Klasse: GebuchteFlügeController
+ * Beschreibung: Abstraktionsschicht des GebuchteFlügeDao.
+ */
+
+public class GebuchteFlügeController implements GebuchteFlügeDao {
 
 	@EJB
-	private GebuchteFlügeDao gebuchteFlügeDao;
+	private GebuchteFlügeDaoImpl gebuchteFlügeDao;
 	
-	public GebuchteFlügeController() { this.gebuchteFlügeDao = new GebuchteFlügeDao(); }
+	/** Constructor **/
+	public GebuchteFlügeController() { this.gebuchteFlügeDao = new GebuchteFlügeDaoImpl(); }
 	
-	public List<GebuchteFlüge> listAllFlughäfen() { return gebuchteFlügeDao.listAllFlughäfen(); }
-
+	/** Abstraktionsmethode der GebuchteFlügeDao-Methode 'listAllFlughäfen'. **/
+	public List<GebuchteFlüge> listAllFlüge() { return gebuchteFlügeDao.listAllFlüge(); }
 	
 }

@@ -8,15 +8,15 @@
    <persistence-unit name="JPA_CONNECTION" transaction-type="RESOURCE_LOCAL">
 
 	    <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
-	    <class>com.fis.model.User</class>
-	    <class>com.fis.model.Flugzeuge</class>
-	    <class>com.fis.model.Flughäfen</class>
-	    <class>com.fis.model.Buchung</class>
-	    <class>com.fis.model.Fluggesellschaften</class>
-	    <class>com.fis.model.Passagier</class>
-	    <class>com.fis.model.PassagierPK</class>
-	    <class>com.fis.model.Fluglinien</class>
-	    <class>com.fis.model.Flug</class>
+	    <class>com.fis.dto.User</class>
+	    <class>com.fis.dto.Flugzeuge</class>
+	    <class>com.fis.dto.Flughäfen</class>
+	    <class>com.fis.dto.Buchung</class>
+	    <class>com.fis.dto.Fluggesellschaften</class>
+	    <class>com.fis.dto.Passagier</class>
+	    <class>com.fis.dto.PassagierPK</class>
+	    <class>com.fis.dto.Fluglinien</class>
+	    <class>com.fis.dto.Flug</class>
 	    <properties>
  		  <property name="javax.persistence.jdbc.driver" 	value="com.mysql.jdbc.Driver" />
   		  <property name="javax.persistence.jdbc.url" 		value="jdbc:mysql://localhost:3306/flugbuchung" />

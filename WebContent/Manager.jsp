@@ -2,8 +2,7 @@
 <%@ page import="java.util.List" %>
 <%@ page import="javax.servlet.http.HttpServletRequest" %>
 <%@ page import="com.fis.de.Redirection" %>
-<%@ page import="com.fis.model.User" %>
-<%@ page import="com.fis.model.*" %>
+<%@ page import="com.fis.dto.*" %>
 <%@ page import="com.fis.controller.FlugzeugController" %>
 <%@ page import="com.fis.controller.FlugController" %>
 <%@ page import="com.fis.controller.GebuchteFlügeController" %>
@@ -20,14 +19,13 @@
 	 <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 	 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
 	 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/css/materialize.min.css">
-	 <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
   	 <link rel="stylesheet" href="assets/css/main.css">
 
 
 	 <!-- Compiled and minified JavaScript -->
 	 <script type="text/javascript" src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
 	 <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/js/materialize.min.js"></script>
-  	 <script src="assets/js/datepicker.js"></script>
+  	 <script src="assets/js/Datepicker.js"></script>
 
 	 <title>Fluginformationssystem (FIS) - Manageransicht</title>
 	 
@@ -141,7 +139,7 @@
 		        </thead>		
 		        <tbody>
 		          <%
-		          	for(GebuchteFlüge gF : gebuchteFlügeController.listAllFlughäfen()) {
+		          	for(GebuchteFlüge gF : gebuchteFlügeController.listAllFlüge()) {
 		          		out.println("<tr>");
 						out.println("<td>" + gF.getFlugLinie() + "</td>");
 						out.println("<td>" + gF.getHersteller() + " - " + gF.getType() + "</td>");

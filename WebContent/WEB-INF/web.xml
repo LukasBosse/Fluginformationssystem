@@ -14,8 +14,8 @@
     <servlet-class>javax.faces.webapp.FacesServlet</servlet-class>
   </servlet>
   <servlet>
-      <servlet-name>DetailLoader</servlet-name>
-      <servlet-class>com.fis.de.DetailLoader</servlet-class>
+    <servlet-name>DetailLoader</servlet-name>
+    <servlet-class>com.fis.de.DetailLoader</servlet-class>
   </servlet>
   <servlet-mapping>
     <servlet-name>Faces Servlet</servlet-name>
