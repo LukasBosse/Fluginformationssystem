@@ -22,7 +22,7 @@
   		  <property name="javax.persistence.jdbc.url" 		value="jdbc:mysql://localhost:3306/flugbuchung" />
  	      <property name="javax.persistence.jdbc.user"      value="root" />
  	      <property name="javax.persistence.jdbc.password"  value="" />
-	      <property name="eclipselink.ddl-generation"       value="create-tables" />
+	      <property name="eclipselink.ddl-generation"       value="none" />
 	      <property name="openjpa.jdbc.SynchronizeMappings" value="buildSchema" />
 	    </properties>
 	    
