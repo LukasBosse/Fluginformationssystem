@@ -1,77 +1,132 @@
+/*
+ * Project: Fluginformationssystem
+ * Author: Lukas Bosse, Torben Kuhnke, Malte Peters (WI 47/15)
+ */
+
 package com.fis.de;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 
+import javax.faces.bean.ManagedBean;
+import javax.faces.bean.SessionScoped;
+import javax.faces.context.FacesContext;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+import javax.xml.bind.DatatypeConverter;
+
+import com.fis.controller.UserController;
+import com.fis.dto.User;
+
+/**
+ * Klasse: Verification
+ * Beschreibung: Verifizierung des Nutzers mit Nutzerdaten aus der Datenbank.
+ */
+
+@ManagedBean(name = "verification", eager = true)
+@SessionScoped
 public class Verification {
+	
+	private UserController userController;
+	
+	private String username;
 
-	private final String DRIVER = "com.mysql.cj.jdbc.Driver";
-	private final String HOST = "localhost";
-	private final String PORT = "3306";
-	private final String DATABASE = "flugbuchung";
-	private final String USER = "root";
-	private final String PASSWORT = "";
+	private String password;
 	
-	private Connection cn = null;
-	private PreparedStatement  st = null;
-	private ResultSet  rs = null;
-	
-	public Verification() {}
-	
-	public void connect() {
-		try {
-			Class.forName(DRIVER).newInstance();
-			cn = DriverManager.getConnection("jdbc:mysql://" + HOST + ":" + PORT + "/" + DATABASE + "?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC", USER, PASSWORT);
-		} catch (Exception ex) {
-			ex.printStackTrace();
-		}
+	/** Constructor **/
+	public Verification()
+	{
+		userController = new UserController();
 	}
 	
-	public boolean execute(String query, String[] param) {
-		if(cn == null) { return false; }
-		try {
-			st = cn.prepareStatement(query);
-			if(param != null) {
-				for(int i = 0; i < param.length; i++) {
-					st.setString(i+1, param[i]);
-				}
+	/**
+	 * Registrierung eines neuen Nutzers.
+	 * @param pw
+	 * @param username
+	 * @param userType
+	 * @param password
+	 */
+	public void register(PrintWriter pw, String username, String userType, String password) {
+		User user = new User(username, toMD5(password), userType);
+		userController.create(pw, user);
+	}
+	
+	/**
+	 * Anmeldefunktion des Nutzers und Weiterleitung zu einer ihm zugeteilten Seite.
+	 * @return
+	 */
+	public String doLogin() {
+		
+		HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
+		HttpServletResponse response = (HttpServletResponse) FacesContext.getCurrentInstance().getExternalContext().getResponse();
+		HttpSession session = request.getSession();
+		
+		User user = userController.findUser(username);
+		if(user != null && user.getPasswort().equals(toMD5(password))) {
+			session.setAttribute("user", user);
+			return user.getType() + ".jsp";
+		} else {	
+			try {
+				userController.writeAlert(response.getWriter(), "Warnung!", "Ihre Anmeldung ist leider fehlgeschlagen. Bitte prüfen Sie Ihre Eingaben!", "alert-danger", "left");
+			} catch (IOException e) {
+				e.printStackTrace();
 			}
-			return st.execute(query);
-		} catch (SQLException e) {
-			e.printStackTrace();
+			return "";
 		}
-		return false;
+		
 	}
 	
-	public ResultSet executeQuery(String query, String[] param) {
-		if(cn == null) { return null; }
+	/**
+	 * MD5 Verschlüsselung eines Passwortes.
+	 * @param pass
+	 * @return
+	 */
+	public static String toMD5(String pass) {
+		MessageDigest md;
 		try {
-			st = cn.prepareStatement(query);
-			if(param != null) {
-				for(int i = 0; i < param.length; i++) {
-					st.setString(i+1, param[i]);
-				}
-			}
-			rs = st.executeQuery(query);
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
+			md = MessageDigest.getInstance("MD5");
+			md.update(pass.getBytes());
+		    byte[] digest = md.digest();
+		    String myHash = DatatypeConverter.printHexBinary(digest).toUpperCase();
+		    return myHash;
+		} catch (NoSuchAlgorithmException e) {
 			e.printStackTrace();
 		}
-		return rs;
+		return "";
 	}
 	
-	public void disconnect() {
-		if(cn == null) return;
-		try {
-			cn.close();
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
+	/**
+	 * Getter-Methode Username.
+	 * @return
+	 */
+	public String getUsername() {
+		return username;
 	}
-	
-	
+
+	/**
+	 * Setter-Methode Username.
+	 * @param username
+	 */
+	public void setUsername(String username) {
+		this.username = username;
+	}
+
+	/**
+	 * Getter-Methode Passwort.
+	 * @return
+	 */
+	public String getPassword() {
+		return password;
+	}
+
+	/**
+	 * Setter-Methode Passwort.
+	 * @param password
+	 */
+	public void setPassword(String password) {
+		this.password = password;
+	}
 }
